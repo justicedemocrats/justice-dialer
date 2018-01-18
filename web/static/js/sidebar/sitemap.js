@@ -64,7 +64,7 @@ const jd = [
 
   {
     label: 'Candidates',
-    path: '/candidates',
+    path: 'HOSTNAME/candidates',
     matches: () => window.location.href.match('/candidates'),
     children: []
   },
