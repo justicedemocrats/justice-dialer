@@ -19,12 +19,14 @@ defmodule JusticeDialer.Router do
 
     get("/", PageController, :index)
     get("/candidate/:candidate", PageController, :candidate)
+
+    get("/login-iframe/:client", LoginController, :get_iframe)
+    post("/login-iframe/:client", LoginController, :post_iframe)
+
     get("/login", LoginController, :get)
     get("/logins/download", LoginController, :get_logins)
     post("/login", LoginController, :post)
 
-    get("/login-iframe/:client", LoginController, :get)
-    post("/login-iframe/:client", LoginController, :post)
 
     get("/info/:info", InfoController, :get)
 
@@ -32,10 +34,12 @@ defmodule JusticeDialer.Router do
     post("/call-aid/:candidate", PageController, :easy_volunteer)
   end
 
-  scope "/", JusticeDialer do
+  scope "/api", JusticeDialer do
     pipe_through(:api)
 
     get("/call/who-claimed/:client/:login", LoginController, :who_claimed)
+    get("/update/cosmic", UpdateController, :cosmic)
+    post("/update/cosmic", UpdateController, :cosmic)
   end
 
   defp handle_errors(conn, %{kind: kind, reason: reason, stack: stacktrace}) do
