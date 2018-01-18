@@ -1,21 +1,6 @@
 defmodule GlobalOpts do
   defp get_brand(conn, params) do
-    cond do
-      Map.has_key?(params, "brand") ->
-        case params["brand"] do
-          "bnc" -> "bnc"
-          _ -> "jd"
-        end
-
-      String.contains?(conn.host, "justicedemocrats") ->
-        "jd"
-
-      String.contains?(conn.host, "brandnewcongress") ->
-        "bnc"
-
-      true ->
-        "jd"
-    end
+    "jd"
   end
 
   defp is_mobile?(conn, _params) do
