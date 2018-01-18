@@ -1,0 +1,238 @@
+<%= if @calling_page_is_down["metadata"]["calling_page_is_down"] == "Show Message" do %>
+
+  <div class="nav-body-container" style="padding: 20px;">
+    <%= if (not @mobile) do %>
+      <%= render JusticeDialer.LayoutView, "left-nav.html", assigns %>
+    <% end %>
+    <div>
+      <%= raw(@calling_page_is_down["content"]) %>
+    </div>
+  </div>
+<% else %>
+  <!-- <%= render JusticeDialer.LayoutView, "h1.html", [brand: @brand, text: "Call Voters"] %> -->
+  <div style="border-bottom: 2px solid black; width: 100%; display: flex; align-items: flex-end; justify-content: space-between;">
+    <%= if @candidate != nil do %>
+      <h1 style="text-transform: underline;"> Call Voters for <%= @candidate["title"] %> (<%= @candidate["metadata"]["district"] %>) </h1>
+    <% else %>
+      <h1 style="text-transform: underline;"> Call Voters </h1>
+    <% end %>
+  </div>
+
+  <% csl =
+    cond do
+      @calling_script_link != nil and String.contains?(@calling_script_link, "https://") -> @calling_script_link
+      @calling_script_link -> core_deployment(@brand) <> @calling_script_link
+      true -> nil
+    end
+  %>
+  <% abbrev = String.upcase(@brand) %>
+
+  <div class="nav-body-container">
+
+    <%= if @brand == "jd" do %>
+      <!-- Start of justicedemocrats Zendesk Widget script -->
+      <script>/*<![CDATA[*/window.zEmbed||function(e,t){var n,o,d,i,s,a=[],r=document.createElement("iframe");window.zEmbed=function(){a.push(arguments)},window.zE=window.zE||window.zEmbed,r.src="javascript:false",r.title="",r.role="presentation",(r.frameElement||r).style.cssText="display: none",d=document.getElementsByTagName("script"),d=d[d.length-1],d.parentNode.insertBefore(r,d),i=r.contentWindow,s=i.document;try{o=s}catch(e){n=document.domain,r.src='javascript:var d=document.open();d.domain="'+n+'";void(0);',o=s}o.open()._l=function(){var e=this.createElement("script");n&&(this.domain=n),e.id="js-iframe-async",e.src="https://assets.zendesk.com/embeddable_framework/main.js",this.t=+new Date,this.zendeskHost="justicedemocrats.zendesk.com",this.zEQueue=a,this.body.appendChild(e)},o.write('<body onload="document._l();">'),o.close()}();
+      /*]]>*/</script>
+      <!-- End of justicedemocrats Zendesk Widget script -->
+    <% end %>
+
+    <div class="page-body" style="width: 100%; margin-left: 0px; margin-right: 0px;">
+      <%= if @candidate !== nil and length(@callable_slugs) > 0 do %>
+
+      <%= if @candidate != nil do %>
+        <span style="font-weight: bold; margin-bottom: 10px;">
+          <%= case @candidate_is_open do %>
+            <% true -> %>
+              The dialer will be open until 9PM
+            <% {:before, time} -> %>
+              The dialer for <%= @candidate["title"] %> will open today at <%= time %>.
+            <% {:after, time} -> %>
+              The dialer for <%= @candidate["title"] %> is closed for the day. It will re-open tomorrow at <%= time %>tomorrow
+          <% end %>
+        </span>
+      <% end %>
+
+
+        <p>
+          <%= if @candidate_is_open != true do %>
+            <a class="button button-light" href="/form/call-from-home" target="_blank">
+              Sign Up to Make Calls Later
+            </a>
+            <a class="button" href="/" target="_blank">
+              Make Calls for Other Candidates
+            </a>
+          <% end %>
+        </p>
+      <% end %>
+
+      <%= if @candidate == nil do %>
+
+        <%= if length(@priority) > 0 do %>
+          <h2>  Priority Calls Right Now </h2>
+          <div style="display: flex; width: 100%; flex-wrap: wrap;">
+            <%= for cand <- @priority do %>
+              <a style="min-width: 250px; margin-left: 20px; height: 70px; width: 30%; margin-top: 10px; background-color: var(--jd-peach); border: none;" class="button button-danger" href="/candidate/<%= cand.slug %>">
+                <strong> <%= cand.title %> </strong> <br/>
+                <%= cand.metadata["district"] %>
+              </a>
+            <% end %>
+          </div>
+        <% end %>
+
+        <%= if length(@rest) > 0 do %>
+          <h2 style="margin-top: 20px;"> Open Right Now </h2>
+          <div style="display: flex; justify-content: space-around; width: 100%; flex-wrap: wrap;">
+            <%= for cand <- @rest do %>
+              <a style="min-width: 250px; height: 70px; width: 30%; margin-top: 10px; background-color: var(--jd-dark-blue);" class="button" href="/candidate/<%= cand.slug %>">
+                <strong> <%= cand.title %> </strong> <br/>
+                <%= cand.metadata["district"] %>
+              </a>
+            <% end %>
+          </div>
+        <% end %>
+
+        <%= if length(@off_hours) > 0 do %>
+          <h2 style="margin-top: 20px;">
+
+            <%= if Timex.now("America/New_York").hour < 18 do %>
+              Not Open Yet
+            <% else %>
+              Closed For the Day
+            <% end %>
+
+          </h2>
+          <div style="display: flex; justify-content: space-around; width: 100%; flex-wrap: wrap;">
+            <%= for cand <- @off_hours do %>
+              <a style="min-width: 250px; height: 70px; width: 30%; margin-top: 10px;" class="button button-secondary" href="/candidate/<%= cand.slug %>">
+                <strong> <%= cand.title %> </strong> <br/>
+                <%= cand.metadata["district"] %>
+              </a>
+            <% end %>
+          </div>
+        <% end %>
+
+      <% end %>
+      <%= if @candidate != nil or @draft do %>
+        <%= if @candidate != nil or @draft do %>
+          <div style="display: flex;">
+            <div style="margin-top: 10px; margin-bottom: 10px; text-align: left">
+              <%= raw(@candidate_calling_page) %>
+            </div>
+
+            <div class="link-container" style="display: flex; flex-direction: column; margin-bottom: 10px; min-width: 300px; padding: 10px; background-color: rgba(255, 155, 101, .4);">
+              <h2> 4 Steps to Make Calls </h2>
+
+              <div style="font-size: larger; margin-bottom: 12px;">
+                <a target="_blank" href="https://docs.google.com/document/d/13PglZGs0pGkpTy3BWZbbUdhla63nJhTIHpYtq_X0A8M/edit?usp=sharing">
+                  1) Read the guide on how to make calls for <%= abbrev %>
+                </a>
+              </div>
+
+              <div style="font-size: larger; margin-bottom: 12px;">
+                <a target="_blank" href="<%= csl %>">
+                  2) Read the calling script
+                </a>
+              </div>
+
+              <div style="font-size: larger; margin-bottom: 12px;">
+                <a target="_blank" href="/login">
+                  3) Claim your login
+                </a>
+              </div>
+
+              <div style="font-size: larger; margin-bottom: 12px;">
+                <a target="_blank" href="https://portal.na4.livevox.com/BrandNewCampaign/AgentLogin">
+                  4) Login to our dialer, and get calling!
+                </a>
+              </div>
+
+              <div style="text-align: center; font-size: 14pt; background-color: #ff9b65; margin-top: 20px; margin-bottom: 20px; padding-top: 10px; padding-bottom: 10px;"><p style="margin-bottom: 0px;"><span style="font-size: 13pt;"><strong>NOTE: Turn off your popup blocker to use the JD dialer</strong></span><br><span style="font-size: 11pt;">(click on the name of your browser to see the fullsize animation)</span></p><p style="margin-bottom: 0px;">Change <strong>before</strong> you log in: <br/><a href="https://cosmicjs.com/uploads/7bf85520-6a36-11e7-8e92-5f0a6431fba8-Safari%20Popup%20Blocker.gif" rel="noopener noreferrer" target="_blank"><strong>Safari</strong></a>, <a href="https://cosmicjs.com/uploads/743b6fc0-6a36-11e7-9554-0968c6aee140-Edge%20Popup%20Blocker.gif"><strong>Edge</strong></a><br>Change <strong>while</strong> you log in:<br/> <a href="https://cosmicjs.com/uploads/78143d20-6a36-11e7-8e92-5f0a6431fba8-Chrome%20Popup%20Blocker.gif"><strong>Chrome</strong></a>, <strong><a href="https://cosmicjs.com/uploads/81ba54e0-6a36-11e7-8e92-5f0a6431fba8-Firefox%20Popup%20Blocker.gif" rel="noopener noreferrer" target="_blank">Firefox</a></strong></p></div>
+
+              <iframe width="100%" height="315" src="https://www.youtube.com/embed/oBRH1lObiz4" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+              <div style="text-align: left; margin-top: 10px;">
+                <h3> Calling hours </h3>
+                  <p>
+                    We make calls from 10AM - 9PM on Monday through Saturday and
+                    12AM - 9PM on Sunday's in our candidates' local time zones,
+                    so check back anytime you want to make calls.
+                    <br />
+                    However, your login information will change each day, so you'll
+                    need to reclaim it.
+                  </p>
+                <h3> Questions? </h3>
+                  <p>
+                    Please email
+                    <% email =
+                      case @brand do
+                        "jd" -> "calling@justicedemocrats.com"
+                        "bnc" -> "calling@brandnewcongress.org"
+                      end
+                    %>
+                    <a href="mailto:<%= email %>" target="-blank"> <%= email %> </a>,
+                    or use the livechat widget in the bottom of this window.
+                    We'll get back to you as soon as we can.
+                  </p>
+              </div>
+            </div>
+          </div>
+
+
+        <% else %>
+
+          <p> Please make calls for one of our other candidates: <br /> </p>
+          <ul>
+            <%= for cand <- @callable_candidates do %>
+              <li>
+                <p> <a href="<%= "/candidate/#{cand.slug}" %>" target="_blank">
+                  <%= cand.title %>
+                </a> </p>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+
+      <% end %>
+    </div>
+
+  </div>
+
+  <style>
+
+  .nav-body-container {
+    display: flex;
+  }
+
+  .page-body {
+    margin: 20px;
+  }
+
+  .page-body > .link-container > a {
+    width: 200px;
+    padding: 10px;
+    text-transform: none;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .option-group-header {
+    font-size: larger;
+    border-bottom: 1px solid black;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .option-container {
+    display: flex;
+    flex-wrap: wrap;
+    <%= if @mobile do %>
+      justify-content: space-around;
+    <% end %>
+  }
+
+  .container {
+    padding: 30px;
+  }
+
+  </style>
+<% end %>

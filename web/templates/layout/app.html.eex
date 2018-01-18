@@ -1,0 +1,74 @@
+<% description =
+  cond do
+    assigns[:description] -> assigns[:description]
+    @brand == "bnc" -> "Brand New Congress is recruiting incredible people to run for Congress in 2018 in a unified campaign behind a single plan to fix our government and our country."
+    @brand == "jd" -> "Justice Democrats: Democrats that represent people, not corporations."
+  end
+%>
+
+<% banner =
+  cond do
+    assigns[:banner] -> assigns[:banner]
+    @brand == "jd" -> "https://cosmicjs.com/uploads/72ea6c30-91ea-11e7-ac16-9bd4a7f0c125-16003310_243595192747895_4767057136317260386_n.png"
+    @brand == "bnc" -> "https://cosmicjs.com/uploads/057895e0-591a-11e7-a947-e12ac523dacd-BNC"
+  end
+%>
+
+<% background_image =
+  cond do
+    assigns[:background_image] -> "background-image: url(#{assigns[:background_image]});"
+    true -> ""
+  end
+%>
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="<%= description %>">
+    <meta name="author" content="<%= homepage(@brand) %>">
+    <meta property="og:description" content="<%= description %>">
+    <meta property="og:image" content="<%= banner %>">
+
+    <title>
+      <%= if @brand == "jd" do %>Justice Democrats<% else %>Brand New Congress<% end %>
+      <%= gettext "| %{title}", title: assigns[:title] %>
+    </title>
+
+    <!-- Conditional font includes -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab+" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One|Anonymous+Pro|Roboto" rel="stylesheet">
+    
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+  </head>
+
+  <body class="<%= @brand %>"  style="<%=background_image%>">
+    <%= if assigns[:no_header] != true do %>
+      <%= render JusticeDialer.LayoutView, "header.html",
+            [conn: @conn, mobile: @mobile, header_text: assigns[:header_text],
+             brand: @brand] %>
+    <% end %>
+
+    <div class="container">
+      <main role="main">
+        <%= render @view_module, @view_template, assigns %>
+      </main>
+    </div>
+
+    <%= if assigns[:no_footer] != true do %>
+      <%= render JusticeDialer.LayoutView, "footer.html", [brand: @brand, no_footer: assigns[:no_footer]] %>
+    <% end %>
+
+    <!-- Load main app -->
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+
+    <!-- Define global opts -->
+    <script>
+      window.opts = {
+        brand: '<%=@brand%>'
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+/* -------------------------- Brand definitions -------------------------- */
+.bnc {
+  --bnc-purple: #7932AC;
+  --bnc-salmon: #FF7A65;
+  --bnc-blue: #598089;
+  --bnc-green: #8C8B02;
+  --bnc-yellow: #FFFE00;
+  --bnc-white: #FFFFFF;
+  --bnc-black: #111111;
+
+  --color-primary: var(--bnc-purple);
+  --color-secondary: var(--bnc-white);
+  --color-accent-one: var(--bnc-salmon);
+  --color-accent-two: var(--bnc-green);
+}
+
+body.bnc {
+  /* Shoelace */
+  --button-bg-color: var(--bnc-purple);
+}
+
+/* Platform / text styles */
+.bnc h1 {
+  font-family: 'Roboto Condensed', sans-serif !important;
+  text-transform: uppercase;
+  padding: 5px;
+}
+
+.bnc h2, .bnc h3 {
+  letter-spacing: .01em;
+  font-family: 'Roboto Condensed', sans-serif !important;
+}
+
+.bnc p, .bnc label {
+  font-family: 'Roboto Slab', sans-serif !important;
+}
+
+.bnc .condensed {
+  font-family: 'Roboto Condensed', sans-serif !important;
+}
+
+.bnc .page-title {
+  background-color: var(--bnc-black);
+  color: var(--bnc-white);
+  text-align: center;
+  line-height: 37px;
+}
+
+.bnc .small-star {
+  font-size: small;
+  line-height: 37px;
+}
+
+.bnc path.leaflet-interactive {
+  fill: var(--bnc-purple);
+  stroke: var(--bnc-white);
+  fill-opacity: .8;
+  width: 30px;
+  height: 30px;
+}
+
+.bnc path.leaflet-interactive.district-overlay {
+  fill: var(--bnc-salmon);
+  fill-opacity: .5;
+}

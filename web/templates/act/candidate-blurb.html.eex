@@ -1,0 +1,82 @@
+<% cand = @candidate || @closest_candidate %>
+<%
+  prompt = case @candidate do
+    nil -> "You're near #{cand["title"]}'s district! (#{cand["metadata"]["district"]})"
+    %{} -> "You're in #{cand["title"]}'s district!"
+  end
+%>
+
+<% name = cand["title"] %>
+<% url = cand["metadata"]["external_website"] %>
+
+<%= if @mobile do %>
+  <div class="candidate-blurb">
+    <div class="candidate-flex">
+      <div class="blurb-header">
+        <%= prompt %>
+      </div>
+      <img class="blurb-image" src="<%= cand["metadata"]["small_picture"]["imgix_url"] %>" />
+      <div class="blurb">
+        <%= raw(cand["metadata"]["website_blurb"]) %>
+      </div>
+    </div>
+    <div class="learn-more">
+      Learn more about <%= name %> <a href="<%= url %>"> here </a>.
+    </div>
+  </div>
+<% else %>
+  <div class="candidate-blurb">
+    <div class="candidate-flex">
+      <div>
+        <div class="blurb-header">
+          <%= prompt %>
+        </div>
+        <div class="blurb">
+          <%= raw(cand["metadata"]["website_blurb"]) %>
+        </div>
+      </div>
+      <img class="blurb-image" src="<%= cand["metadata"]["small_picture"]["imgix_url"] %>" />
+    </div>
+    <div class="learn-more">
+      Learn more about <%= name %> <a href="<%= url %>"> here </a>.
+    </div>
+  </div>
+<% end %>
+
+<style>
+.candidate-blurb {
+  border: 1px solid black;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.candidate-flex {
+  display: flex;
+  <%= if @mobile do %>
+    flex-direction: column;
+    align-items: center;
+  <% end %>
+}
+
+.blurb-image {
+  width: 36%;
+  height: 100%;
+  float: right;
+  margin-left: 5px;
+  <%= if @mobile do %>
+    width: 75%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  <% end %>
+}
+
+.candidate-blurb p {
+  margin: 10px;
+  font-style: italic;
+}
+
+.candidate-blurb {
+  font-family: 'Roboto Slab', sans-serif !important;
+}
+
+</style>

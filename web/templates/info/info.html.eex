@@ -1,0 +1,65 @@
+<div style="padding: 40px;">
+  <%= raw(@content) %>
+
+  <%= if assigns[:show_help_desk_widget] != nil and assigns[:show_help_desk_widget] == "Show" do %>
+    <!-- Start of justicedemocrats Zendesk Widget script -->
+    <script>/*<![CDATA[*/window.zEmbed||function(e,t){var n,o,d,i,s,a=[],r=document.createElement("iframe");window.zEmbed=function(){a.push(arguments)},window.zE=window.zE||window.zEmbed,r.src="javascript:false",r.title="",r.role="presentation",(r.frameElement||r).style.cssText="display: none",d=document.getElementsByTagName("script"),d=d[d.length-1],d.parentNode.insertBefore(r,d),i=r.contentWindow,s=i.document;try{o=s}catch(e){n=document.domain,r.src='javascript:var d=document.open();d.domain="'+n+'";void(0);',o=s}o.open()._l=function(){var e=this.createElement("script");n&&(this.domain=n),e.id="js-iframe-async",e.src="https://assets.zendesk.com/embeddable_framework/main.js",this.t=+new Date,this.zendeskHost="justicedemocrats.zendesk.com",this.zEQueue=a,this.body.appendChild(e)},o.write('<body onload="document._l();">'),o.close()}();
+    /*]]>*/</script>
+    <!-- End of justicedemocrats Zendesk Widget script -->
+  <% end %>
+</div>
+
+<script>
+
+  function show (el) {
+    el.style.display = 'block';
+  }
+
+  function hide (el) {
+    el.style.display = 'none';
+  }
+
+  function toggle (el) {
+    if (el.style.display == 'none') {
+      el.style.display = 'block';
+    } else {
+      el.style.display = 'none';
+    }
+  }
+
+  function showHiddenContent (ev) {
+    var el = document.querySelector('#vol-events');
+    var action = el.getAttribute('data-action');
+
+    if (action == 'show') {
+      show(el)
+    } else if (action == 'hide') {
+      hide(el)
+    } else {
+      toggle(el)
+    }
+  }
+
+  function toggleTarget (ev) {
+    var el = ev.target
+    var targetId = el.getAttribute('data-target')
+
+    var target = document.querySelector('#' + targetId)
+
+    if (target) toggle(target)
+  }
+
+  var buttons = Array.from(document.querySelectorAll('.show-events'));
+
+  buttons.forEach(function (button) {
+    button.addEventListener('click', showHiddenContent);
+  })
+
+
+  var togglers = Array.from(document.querySelectorAll('.toggler'));
+
+  togglers.forEach(function (button) {
+    button.addEventListener('click', toggleTarget)
+  });
+
+</script>
