@@ -120,6 +120,6 @@ const jd = [
   }
 ]
 
-const siteMap = window.location.origin.includes('justicedemocrats') ? jd : bnc
+const siteMap = window.location.origin.includes('justicedialer') ? jd : bnc
 
 export default siteMap

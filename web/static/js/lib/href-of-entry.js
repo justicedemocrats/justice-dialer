@@ -1,4 +1,4 @@
-const base = window.location.href.includes('justicedemocrats')
+const base = window.location.href.includes('justicedialer')
   ? 'https://justicedemocrats.com'
   : 'https://brandnewcongress.org'
 

@@ -177,7 +177,7 @@ export default class EventMap extends Component {
             height: '100%'
           }}
           href={
-            window.location.origin.includes('justicedemocrats') ||
+            window.location.origin.includes('justicedialer') ||
             window.location.origin.includes('brandnewcongress')
               ? '/form/submit-event'
               : 'https://now.justicedemocrats.com/form/submit-event'
