@@ -24,7 +24,7 @@ const bnc = [
     children: [
       {
         label: 'Action Portal',
-        path: '/act',
+        path: 'HOSTNAME/act',
         matches: () =>
           window.location.href.match('/act') &&
           window.location.href.endsWith('act'),
@@ -32,19 +32,13 @@ const bnc = [
       },
       {
         label: 'Attend an Event',
-        path: '/events',
+        path: 'HOSTNAME/events',
         matches: () => false,
         children: []
       },
       {
-        label: 'Call Voters',
-        path: '/act/call',
-        matches: () => window.location.href.match('/act/call'),
-        children: []
-      },
-      {
         label: 'Any special skills?',
-        path: '/form/special-skills',
+        path: 'HOSTNAME/form/special-skills',
         matches: () => false,
         children: []
       }
@@ -77,7 +71,7 @@ const jd = [
 
   {
     label: 'Action',
-    path: '/act',
+    path: 'HOSTNAME/act',
     matches: () =>
       window.location.href.match('/act') ||
       window.location.href.match('/form/submit-event') ||
@@ -85,7 +79,7 @@ const jd = [
     children: [
       {
         label: 'Action Portal',
-        path: '/act',
+        path: 'HOSTNAME/act',
         matches: () =>
           window.location.href.match('/act') &&
           window.location.href.endsWith('act'),
@@ -93,31 +87,25 @@ const jd = [
       },
       {
         label: 'Attend an Event',
-        path: '/events',
+        path: 'HOSTNAME/events',
         matches: () => false,
         children: []
       },
       {
         label: 'Host an Event',
-        path: '/form/submit-event',
+        path: 'HOSTNAME/form/submit-event',
         matches: () => window.location.href.match('/form/submit-event'),
         children: []
       },
       {
-        label: 'Call Voters',
-        path: '/act/call',
-        matches: () => window.location.href.match('/act/call'),
-        children: []
-      },
-      {
         label: 'Join a National Team',
-        path: '/form/teams',
+        path: 'HOSTNAME/form/teams',
         matches: () => false,
         children: []
       },
       {
         label: 'Any special skills?',
-        path: '/form/special-skills',
+        path: 'HOSTNAME/form/special-skills',
         matches: () => false,
         children: []
       }
