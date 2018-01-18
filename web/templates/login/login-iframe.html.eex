@@ -1,8 +1,8 @@
 <%
   post_url = if @use_post_sign do
-    "/call-iframe/#{@client}?post_sign=#{@post_sign_url}"
+    "/login-iframe/#{@client}?post_sign=#{@post_sign_url}"
   else
-    "/call-iframe/#{@client}"
+    "/login-iframe/#{@client}"
   end
 %>
 
