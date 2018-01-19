@@ -63,7 +63,7 @@ const is = {
 
 const handle = {
   relative: a => {
-    if (a.getAttribute('href').includes('form')) {
+    if (true) {
       return window.location.href = a.getAttribute('href')
     }
 
