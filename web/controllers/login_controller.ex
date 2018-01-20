@@ -102,10 +102,10 @@ defmodule JusticeDialer.LoginController do
     current_username = Ak.DialerLogin.existing_login_for_email(email, client)
     action_calling_from = params["calling_from"] || "unknown"
 
-    [username, password] =
+    ~m(username password) =
       case current_username do
         nil -> JusticeDialer.Logins.next_login(client)
-        un -> [un, JusticeDialer.Logins.password_for(un)]
+        un -> %{"username" => un, "password" => JusticeDialer.Logins.password_for(un)}
       end
 
     Ak.DialerLogin.record_login_claimed(
