@@ -4,7 +4,7 @@ defmodule JusticeDialer.UpdateController do
   require Logger
 
   def cosmic(conn, _params) do
-    PubSub.broadcast(:core, "update", "update")
+    spawn(fn -> Cosmic.fetch_all() end)
 
     json(conn, %{
       "unnecessary" => "Ben implemented webhooks! No need to visit hit this link any more, but an update just happened just in case. If it's not updating, contact Ben. Thanks!"
