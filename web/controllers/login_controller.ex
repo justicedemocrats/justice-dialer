@@ -27,7 +27,8 @@ defmodule JusticeDialer.LoginController do
     Ak.DialerLogin.record_login_claimed(
       ~m(email phone name action_calling_from),
       username,
-      client
+      client,
+      true
     )
 
     %{"content" => call_page, "metadata" => metadata} = Cosmic.get("call-page")
