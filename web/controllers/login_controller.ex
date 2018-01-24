@@ -136,7 +136,7 @@ defmodule JusticeDialer.LoginController do
   def who_claimed(conn, params = ~m(client login)) do
     result =
       case Ak.DialerLogin.who_claimed(client, login) do
-        ~m(email calling_from) -> ~m(email calling_from)
+        ~m(email calling_from phone) -> ~m(email calling_from phone)
         nil -> %{error: "Not found"}
       end
 
