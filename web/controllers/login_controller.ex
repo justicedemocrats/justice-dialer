@@ -18,11 +18,11 @@ defmodule JusticeDialer.LoginController do
 
     action_calling_from = params["calling_from"] || "unknown"
 
-    ~m(username password) =
-      case current_username do
-        nil -> JusticeDialer.Logins.next_login(client)
-        un -> %{"username" => un, "password" => JusticeDialer.Logins.password_for(un)}
-      end
+    ~m(username password) = JusticeDialer.Logins.next_login(client)
+      # case current_username do
+      #   nil -> JusticeDialer.Logins.next_login(client)
+      #   un -> %{"username" => un, "password" => JusticeDialer.Logins.password_for(un)}
+      # end
 
     Ak.DialerLogin.record_login_claimed(
       ~m(email phone name action_calling_from),

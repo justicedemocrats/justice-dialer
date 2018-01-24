@@ -27,7 +27,6 @@ defmodule JusticeDialer.Router do
     get("/logins/download", LoginController, :get_logins)
     post("/login", LoginController, :post)
 
-
     get("/info/:info", InfoController, :get)
 
     get("/call-aid/:candidate", PageController, :call_aid)
