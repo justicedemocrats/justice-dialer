@@ -31,5 +31,6 @@ Source: #{source}
 From: #{action_calling_from}
 "})
     |> JusticeDialer.Mailer.deliver()
+    |> IO.inspect()
   end
 end
