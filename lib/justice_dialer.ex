@@ -35,8 +35,8 @@ defmodule JusticeDialer do
       :justice_dialer,
       JusticeDialer.Mailer,
       IO.inspect(adapter: Swoosh.Adapters.Mailgun,
-      api_key: System.get_env("MAILGUN_KEY}"),
-      domain: Sytem.get_env("${MAILGUN_DOMAIN}"))
+      api_key: System.get_env("MAILGUN_KEY"),
+      domain: Sytem.get_env("MAILGUN_DOMAIN"))
     )
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
