@@ -1,9 +1,11 @@
 defmodule JusticeDialer.BrandHelpers do
   def logo_source("bnc"),
-    do: "https://brandnewcongress.org/assets/1/0/bundles/sitetheorytemplatecustom/images/BNClogoFooter.png?v1497713350"
+    do:
+      "https://brandnewcongress.org/assets/1/0/bundles/sitetheorytemplatecustom/images/BNClogoFooter.png?v1497713350"
 
   def logo_source("jd"),
-    do: "https://justicedemocrats.com/assets/1/0/bundles/sitetheorytemplatecustom/images/JDlogoMark.png?v1497022285"
+    do:
+      "https://justicedemocrats.com/assets/1/0/bundles/sitetheorytemplatecustom/images/JDlogoMark.png?v1497022285"
 
   def press("bnc"), do: "press@brandnewcongress.org"
   def press("jd"), do: "press@justicedemocrats.com"

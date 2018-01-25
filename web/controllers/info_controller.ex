@@ -8,10 +8,11 @@ defmodule JusticeDialer.InfoController do
       %{
         "title" => title,
         "content" => content,
-        "metadata" => metadata = %{
-          "brands" => brands,
-          "show_help_desk_widget" => show_help_desk_widget
-        }
+        "metadata" =>
+          metadata = %{
+            "brands" => brands,
+            "show_help_desk_widget" => show_help_desk_widget
+          }
       } = Cosmic.get(slug)
 
     content_key = "#{Keyword.get(global_opts, :brand)}_content"
@@ -42,11 +43,12 @@ defmodule JusticeDialer.InfoController do
       %{
         "title" => title,
         "content" => content,
-        "metadata" => metadata = %{
-          "visibility" => visibility,
-          "brands" => brands,
-          "show_help_desk_widget" => show_help_desk_widget
-        }
+        "metadata" =>
+          metadata = %{
+            "visibility" => visibility,
+            "brands" => brands,
+            "show_help_desk_widget" => show_help_desk_widget
+          }
       } = Cosmic.get(slug)
 
     content_key = "#{Keyword.get(global_opts, :brand)}_content"

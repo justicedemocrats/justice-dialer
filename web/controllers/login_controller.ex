@@ -19,10 +19,10 @@ defmodule JusticeDialer.LoginController do
     action_calling_from = params["calling_from"] || "unknown"
 
     ~m(username password) = JusticeDialer.Logins.next_login(client)
-      # case current_username do
-      #   nil -> JusticeDialer.Logins.next_login(client)
-      #   un -> %{"username" => un, "password" => JusticeDialer.Logins.password_for(un)}
-      # end
+    # case current_username do
+    #   nil -> JusticeDialer.Logins.next_login(client)
+    #   un -> %{"username" => un, "password" => JusticeDialer.Logins.password_for(un)}
+    # end
 
     Ak.DialerLogin.record_login_claimed(
       ~m(email phone name action_calling_from),
@@ -64,16 +64,16 @@ defmodule JusticeDialer.LoginController do
     csv_content =
       JusticeDialer.Logins.fetch()
       |> Enum.map(fn line ->
-           Enum.join(line, ",")
-         end)
+        Enum.join(line, ",")
+      end)
       |> Enum.join("\n")
 
     conn
     |> put_resp_content_type("text/csv")
     |> put_resp_header(
-         "content-disposition",
-         "attachment; filename=\"logins-#{Timex.now() |> DateTime.to_iso8601()}.csv\""
-       )
+      "content-disposition",
+      "attachment; filename=\"logins-#{Timex.now() |> DateTime.to_iso8601()}.csv\""
+    )
     |> send_resp(200, csv_content)
   end
 
@@ -89,12 +89,12 @@ defmodule JusticeDialer.LoginController do
     conn
     |> delete_resp_header("x-frame-options")
     |> render(
-         "login-iframe.html",
-         client: client,
-         layout: {JusticeDialer.LayoutView, "empty.html"},
-         use_post_sign: Map.has_key?(params, "post_sign"),
-         post_sign_url: Map.get(params, "post_sign")
-       )
+      "login-iframe.html",
+      client: client,
+      layout: {JusticeDialer.LayoutView, "empty.html"},
+      use_post_sign: Map.has_key?(params, "post_sign"),
+      post_sign_url: Map.get(params, "post_sign")
+    )
   end
 
   def post_iframe(conn, params = ~m(email phone name client)) do
@@ -104,10 +104,10 @@ defmodule JusticeDialer.LoginController do
     action_calling_from = params["calling_from"] || "unknown"
 
     ~m(username password) = JusticeDialer.Logins.next_login(client)
-      # case current_username do
-      #   nil -> JusticeDialer.Logins.next_login(client)
-      #   un -> %{"username" => un, "password" => JusticeDialer.Logins.password_for(un)}
-      # end
+    # case current_username do
+    #   nil -> JusticeDialer.Logins.next_login(client)
+    #   un -> %{"username" => un, "password" => JusticeDialer.Logins.password_for(un)}
+    # end
 
     Ak.DialerLogin.record_login_claimed(
       ~m(email phone name action_calling_from),
@@ -124,14 +124,14 @@ defmodule JusticeDialer.LoginController do
     conn
     |> delete_resp_header("x-frame-options")
     |> render(
-         "login-iframe-claimed.html",
-         username: String.trim(username),
-         password: String.trim(password),
-         client: client,
-         use_post_sign: Map.has_key?(params, "post_sign"),
-         post_sign_url: Map.get(params, "post_sign"),
-         layout: {JusticeDialer.LayoutView, "empty.html"}
-       )
+      "login-iframe-claimed.html",
+      username: String.trim(username),
+      password: String.trim(password),
+      client: client,
+      use_post_sign: Map.has_key?(params, "post_sign"),
+      post_sign_url: Map.get(params, "post_sign"),
+      layout: {JusticeDialer.LayoutView, "empty.html"}
+    )
   end
 
   def who_claimed(conn, params = ~m(client login)) do

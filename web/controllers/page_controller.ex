@@ -137,7 +137,8 @@ defmodule JusticeDialer.PageController do
       %{
         icon: "district-icon.html",
         label: "Tell Us About Your District",
-        href: "https://docs.google.com/forms/d/e/1FAIpQLSe8CfK0gUULEVpYFm9Eb4iyGOL-_iDl395qB0z4hny7ek4iNw/viewform?refcode=www.google.com"
+        href:
+          "https://docs.google.com/forms/d/e/1FAIpQLSe8CfK0gUULEVpYFm9Eb4iyGOL-_iDl395qB0z4hny7ek4iNw/viewform?refcode=www.google.com"
       },
       %{icon: "team-icon.html", label: "Join a National Team", href: "/form/teams"}
     ]
@@ -170,15 +171,15 @@ defmodule JusticeDialer.PageController do
       |> Enum.filter(&is_callable/1)
       |> Enum.sort_by(fn %{"metadata" => ~m(district)} -> district end)
       |> Enum.group_by(
-           fn cand = %{"metadata" => ~m(priority)} ->
-             cond do
-               on_hours?(cand) != true -> :off_hours
-               priority == "True" -> :priority
-               true -> :rest
-             end
-           end,
-           fn ~m(slug title metadata) -> ~m(slug title metadata)a end
-         )
+        fn cand = %{"metadata" => ~m(priority)} ->
+          cond do
+            on_hours?(cand) != true -> :off_hours
+            priority == "True" -> :priority
+            true -> :rest
+          end
+        end,
+        fn ~m(slug title metadata) -> ~m(slug title metadata)a end
+      )
 
     broken_down
     |> ensure_exists(:priority)

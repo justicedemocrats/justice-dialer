@@ -35,16 +35,16 @@ defmodule JusticeDialer.Logins do
   def gen_logins(count, first_name, wrap_up_time, client) do
     1..count
     |> Enum.map(fn n ->
-         %{
-           username: "#{first_name}#{n}",
-           password: random_password(),
-           first_name: first_name,
-           last_name: "Vol#{n}",
-           wrap_up_time: wrap_up_time,
-           index: n,
-           client: client
-         }
-       end)
+      %{
+        username: "#{first_name}#{n}",
+        password: random_password(),
+        first_name: first_name,
+        last_name: "Vol#{n}",
+        wrap_up_time: wrap_up_time,
+        index: n,
+        client: client
+      }
+    end)
   end
 
   defp random_password do
@@ -62,25 +62,25 @@ defmodule JusticeDialer.Logins do
     Enum.flat_map(~w(beto beto-staff bnc jd), fn client ->
       Db.logins_for_client(client)
       |> Enum.map(fn l ->
-           ~m(username first_name last_name password wrap_up_time) = l
+        ~m(username first_name last_name password wrap_up_time) = l
 
-           Enum.concat(
-             [
-               username,
-               password,
-               first_name,
-               last_name,
-               1234,
-               wrap_up_time,
-               1,
-               0,
-               "Callers",
-               "",
-               ""
-             ],
-             services_for(client)
-           )
-         end)
+        Enum.concat(
+          [
+            username,
+            password,
+            first_name,
+            last_name,
+            1234,
+            wrap_up_time,
+            1,
+            0,
+            "Callers",
+            "",
+            ""
+          ],
+          services_for(client)
+        )
+      end)
     end)
   end
 
@@ -111,13 +111,13 @@ defmodule JusticeDialer.Logins do
     |> Enum.filter(fn %{"metadata" => ~m(brands)} -> Enum.member?(brands, client) end)
     |> Enum.filter(&extra_filter.(&1))
     |> Enum.flat_map(
-         &case get_in(&1, ["metadata", "livevox_service_id"]) do
-           string when is_binary(string) ->
-             String.split(string, ",") |> Enum.map(fn s -> String.trim(s) end)
+      &case get_in(&1, ["metadata", "livevox_service_id"]) do
+        string when is_binary(string) ->
+          String.split(string, ",") |> Enum.map(fn s -> String.trim(s) end)
 
-           int ->
-             ["#{int}"]
-         end
-       )
+        int ->
+          ["#{int}"]
+      end
+    )
   end
 end

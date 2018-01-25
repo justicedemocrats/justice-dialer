@@ -31,6 +31,14 @@ defmodule JusticeDialer do
       ])
     ]
 
+    Application.put_env(
+      :justice_dialer,
+      JusticeDialer.Mailer,
+      adapter: Swoosh.Adapters.Mailgun,
+      api_key: "${MAILGUN_KEY}",
+      domain: "${MAILGUN_DOMAIN}"
+    )
+
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: JusticeDialer.Supervisor]
