@@ -53,7 +53,7 @@
 
         <p>
           <%= if @candidate_is_open != true do %>
-            <a class="button button-light" href="/form/call-from-home" target="_blank">
+            <a class="button button-light" href="https://now.justicedemocrats.com/form/call-from-home" target="_blank">
               Sign Up to Make Calls Later
             </a>
             <a class="button" href="/" target="_blank">
