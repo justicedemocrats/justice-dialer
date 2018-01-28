@@ -41,7 +41,7 @@
         <span style="font-weight: bold; margin-bottom: 10px;">
           <%= case @candidate_is_open do %>
             <% true -> %>
-              The dialer will be open until 9PM
+              The dialer will be open until 9PM. Is now not a good time? <a href="https://now.justicedemocrats.com/form/call-from-home"> Sign up for a calling shift </a> to make calls later.
             <% {:before, time} -> %>
               The dialer for <%= @candidate["title"] %> will open today at <%= time %>.
             <% {:after, time} -> %>
