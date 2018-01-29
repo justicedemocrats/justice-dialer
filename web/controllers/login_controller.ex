@@ -18,11 +18,12 @@ defmodule JusticeDialer.LoginController do
 
     action_calling_from = params["calling_from"] || "unknown"
 
-    ~m(username password) = JusticeDialer.Logins.next_login(client)
-    # case current_username do
-    #   nil -> JusticeDialer.Logins.next_login(client)
-    #   un -> %{"username" => un, "password" => JusticeDialer.Logins.password_for(un)}
-    # end
+    # JusticeDialer.Logins.next_login(client)
+    ~m(username password) =
+      case current_username do
+        nil -> JusticeDialer.Logins.next_login(client)
+        un -> %{"username" => un, "password" => JusticeDialer.Logins.password_for(un)}
+      end
 
     Ak.DialerLogin.record_login_claimed(
       ~m(email phone name action_calling_from),
@@ -41,12 +42,6 @@ defmodule JusticeDialer.LoginController do
       else
         call_page
       end
-
-    spawn(fn ->
-      JusticeDialer.LoginMailer.on_vox_login_claimed(
-        Map.merge(~m(username date name email phone action_calling_from), %{"source" => client})
-      )
-    end)
 
     render(
       conn,
@@ -103,23 +98,18 @@ defmodule JusticeDialer.LoginController do
     current_username = Ak.DialerLogin.existing_login_for_email(email, client)
     action_calling_from = params["calling_from"] || "unknown"
 
-    ~m(username password) = JusticeDialer.Logins.next_login(client)
-    # case current_username do
-    #   nil -> JusticeDialer.Logins.next_login(client)
-    #   un -> %{"username" => un, "password" => JusticeDialer.Logins.password_for(un)}
-    # end
+    ~m(username password) = # JusticeDialer.Logins.next_login(client)
+      case current_username do
+        nil -> JusticeDialer.Logins.next_login(client)
+        un -> %{"username" => un, "password" => JusticeDialer.Logins.password_for(un)}
+      end
 
     Ak.DialerLogin.record_login_claimed(
       ~m(email phone name action_calling_from),
       username,
-      client
+      client,
+      false
     )
-
-    spawn(fn ->
-      JusticeDialer.LoginMailer.on_vox_login_claimed(
-        Map.merge(~m(username date name email phone action_calling_from), %{"source" => client})
-      )
-    end)
 
     conn
     |> delete_resp_header("x-frame-options")
