@@ -10,6 +10,13 @@ defmodule JusticeDialer.Router do
     plug(JusticeDialer.TurboVdomPlug, [])
   end
 
+  pipeline :iframe do
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_flash)
+    plug(:put_secure_browser_headers)
+  end
+
   pipeline :api do
     plug(:accepts, ["json"])
   end
@@ -20,9 +27,6 @@ defmodule JusticeDialer.Router do
     get("/", PageController, :index)
     get("/candidate/:candidate", PageController, :candidate)
 
-    get("/login-iframe/:client", LoginController, :get_iframe)
-    post("/login-iframe/:client", LoginController, :post_iframe)
-
     get("/login", LoginController, :get)
     get("/logins/download", LoginController, :get_logins)
     post("/login", LoginController, :post)
@@ -31,6 +35,13 @@ defmodule JusticeDialer.Router do
 
     get("/call-aid/:candidate", PageController, :call_aid)
     post("/call-aid/:candidate", PageController, :easy_volunteer)
+  end
+
+  scope "/", JusticeDialer do
+    pipe_through(:iframe)
+
+    get("/login-iframe/:client", LoginController, :get_iframe)
+    post("/login-iframe/:client", LoginController, :post_iframe)
   end
 
   scope "/api", JusticeDialer do

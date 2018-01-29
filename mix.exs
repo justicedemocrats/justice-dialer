@@ -77,7 +77,7 @@ defmodule JusticeDialer.Mixfile do
       {:distillery, "~> 1.0.0"},
       {:number, "~> 0.5.2"},
       {:poison, "~> 3.0", override: true},
-      {:cosmic, git: "https://github.com/BrandNewCongress/cosmic_ex.git"},
+      {:cosmic, git: "https://github.com/justicedemocrats/cosmic_ex.git"},
       {:short_maps, "~> 0.1.2"},
       {:actionkit, git: "https://github.com/justicedemocrats/actionkit_ex.git"},
       {:rollbax, "~> 0.6"},
