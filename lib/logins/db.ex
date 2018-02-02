@@ -16,11 +16,14 @@ defmodule Db do
   end
 
   def inc_claimed(client) do
+    IO.puts "Incing claimed for #{client}"
+
     Mongo.update_one(:mongo, "dialer_login_metadata", %{"client" => client}, %{
       "$inc" => %{"claimed_count" => 1}
     })
+    |> IO.inspect()
 
-    ~m(claimed_count) = Mongo.find_one(:mongo, "dialer_login_metadata", %{"client" => client})
+    ~m(claimed_count) = IO.inspect Mongo.find_one(:mongo, "dialer_login_metadata", %{"client" => client})
     claimed_count
   end
 
