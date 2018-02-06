@@ -44,7 +44,6 @@ defmodule JusticeDialer.PageController do
         title: "Call Voters",
         candidate: candidate,
         candidate_is_open: on_hours?(candidate),
-        on_hours: on_hours?(candidate),
         calling_script_link: candidate["metadata"]["calling_script_link"],
         candidate_calling_page: candidate_calling_page,
         priority: priority,

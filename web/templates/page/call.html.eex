@@ -35,8 +35,6 @@
     <!-- End of justicedemocrats Zendesk Widget script -->
 
     <div class="page-body" style="width: 100%; margin-left: 0px; margin-right: 0px;">
-      <%= if @candidate !== nil and length(@callable_slugs) > 0 do %>
-
       <%= if @candidate != nil do %>
         <span style="font-weight: bold; margin-bottom: 10px;">
           <%= case @candidate_is_open do %>
@@ -48,17 +46,25 @@
               The dialer for <%= @candidate["title"] %> is closed for the day. It will re-open tomorrow at <%= time %>tomorrow
           <% end %>
         </span>
-      <% end %>
 
 
         <p>
-          <%= if @candidate_is_open != true do %>
-            <a class="button button-light" href="https://now.justicedemocrats.com/form/call-from-home" target="_blank">
-              Sign Up to Make Calls Later
-            </a>
-            <a class="button" href="/" target="_blank">
-              Make Calls for Other Candidates
-            </a>
+          <%= case @candidate_is_open do %>
+            <% true -> %> <div></div>
+            <% {:before, time} -> %>
+                <a class="button button-light" href="https://now.justicedemocrats.com/form/call-from-home" target="_blank">
+                  Sign Up to Make Calls Later
+                </a>
+                <a class="button" href="/" target="_blank">
+                  Make Calls for Other Candidates
+                </a>
+            <% {:after, time} -> %>
+                <a class="button button-light" href="https://now.justicedemocrats.com/form/call-from-home" target="_blank">
+                  Sign Up to Make Calls Another Day
+                </a>
+                <a class="button" href="/" target="_blank">
+                  Make Calls for Other Candidates
+                </a>
           <% end %>
         </p>
       <% end %>
