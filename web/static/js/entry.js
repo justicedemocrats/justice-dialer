@@ -1,51 +1,50 @@
-import React, { Component } from 'react'
-import { render } from 'react-dom'
-import Row from './entry/row'
-import Input from 'antd/lib/input'
-import Select from 'antd/lib/select'
-import Button from 'antd/lib/button'
-import socket from './socket'
-import 'phoenix_html'
+import React, { Component } from "react";
+import { render } from "react-dom";
+import Row from "./entry/row";
+import Input from "antd/lib/input";
+import Select from "antd/lib/select";
+import Button from "antd/lib/button";
+import socket from "./socket";
 
-const { Option } = Select
+const { Option } = Select;
 
 const initialState = {
   channel: null,
   rows: [],
   contactMethod: undefined,
   campaign: undefined
-}
+};
 
 class Entry extends Component {
-  state = Object.assign({}, initialState)
-  counter = 0
+  state = Object.assign({}, initialState);
+  counter = 0;
 
   componentWillMount() {
-    this.state.channel = socket.channel('entry')
+    this.state.channel = socket.channel("entry");
 
     this.state.channel
       .join()
-      .receive('ok', msg => {
-        console.log(`Connected with ${JSON.stringify(msg)}`)
-        console.log(msg)
+      .receive("ok", msg => {
+        console.log(`Connected with ${JSON.stringify(msg)}`);
+        console.log(msg);
       })
-      .receive('error', msg => {
-        console.log(`Could not connect with ${JSON.stringify(msg)}`)
-        console.log(msg)
-      })
+      .receive("error", msg => {
+        console.log(`Could not connect with ${JSON.stringify(msg)}`);
+        console.log(msg);
+      });
   }
 
   setContactMethod = value => {
-    this.state.contactMethod = value
-    this.checkReadyForRows()
-  }
+    this.state.contactMethod = value;
+    this.checkReadyForRows();
+  };
 
   setCampaign = value => {
-    this.state.campaign = value
-    this.checkReadyForRows()
-  }
+    this.state.campaign = value;
+    this.checkReadyForRows();
+  };
 
-  resetState = () => this.setState(initialState)
+  resetState = () => this.setState(initialState);
 
   checkReadyForRows = () => {
     if (
@@ -53,19 +52,19 @@ class Entry extends Component {
       this.state.campaign !== undefined &&
       this.state.rows.length == 0
     )
-      this.addRow()
-    else this.forceUpdate()
-  }
+      this.addRow();
+    else this.forceUpdate();
+  };
 
   addRow = () => {
-    this.counter = this.counter + 1
+    this.counter = this.counter + 1;
     this.setState({
       rows: this.state.rows.concat([this.counter])
-    })
-  }
+    });
+  };
 
   render() {
-    const { rows, campaign, contactMethod, channel } = this.state
+    const { rows, campaign, contactMethod, channel } = this.state;
 
     return (
       <div>
@@ -76,10 +75,7 @@ class Entry extends Component {
             <div className="field">
               <label> Contact Type </label>
               <br />
-              <Select
-                name="contact-method"
-                onSelect={this.setContactMethod}
-              >
+              <Select name="contact-method" onSelect={this.setContactMethod}>
                 <Option value="door_knock"> Canvassing </Option>
                 <Option value="phone_call"> Phone Calls </Option>
                 <Option value="event_rsvp"> Event RSVPs </Option>
@@ -89,18 +85,12 @@ class Entry extends Component {
             <div className="field">
               <label> Campaign </label>
               <br />
-              <Select
-                name="campaign"
-                onSelect={this.setCampaign}
-              >
-                {window.campaigns.map(({ district, title, slug }) =>
+              <Select name="campaign" onSelect={this.setCampaign}>
+                {window.campaigns.map(({ district, title, slug }) => (
                   <Option value={slug} key={slug}>
-                    {district
-                      ? `${district} – ${title}`
-                      : title
-                    }
+                    {district ? `${district} – ${title}` : title}
                   </Option>
-                )}
+                ))}
               </Select>
             </div>
 
@@ -114,7 +104,7 @@ class Entry extends Component {
           </div>
         </div>
 
-        {rows.map(r =>
+        {rows.map(r => (
           <Row
             key={r}
             counter={r}
@@ -123,10 +113,10 @@ class Entry extends Component {
             channel={channel}
             addRow={this.addRow}
           />
-        )}
+        ))}
       </div>
-    )
+    );
   }
 }
 
-render(<Entry />, document.getElementById('entry-app'))
+render(<Entry />, document.getElementById("entry-app"));
