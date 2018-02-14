@@ -18,9 +18,9 @@ config :logger, :console,
   metadata: [:request_id]
 
 # Quantum config
-jobs = []
+config :justice_dialer, JusticeDialer.Scheduler, jobs: []
 
-config :justice_dialer, JusticeDialer.Scheduler, jobs: jobs
+config :justice_dialer, ak_agent_report_page: 869
 
 config :cosmic, slug: "brand-new-congress"
 

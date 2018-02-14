@@ -16,14 +16,16 @@ defmodule Db do
   end
 
   def inc_claimed(client) do
-    IO.puts "Incing claimed for #{client}"
+    IO.puts("Incing claimed for #{client}")
 
     Mongo.update_one(:mongo, "dialer_login_metadata", %{"client" => client}, %{
       "$inc" => %{"claimed_count" => 1}
     })
     |> IO.inspect()
 
-    ~m(claimed_count) = IO.inspect Mongo.find_one(:mongo, "dialer_login_metadata", %{"client" => client})
+    ~m(claimed_count) =
+      IO.inspect(Mongo.find_one(:mongo, "dialer_login_metadata", %{"client" => client}))
+
     claimed_count
   end
 
@@ -37,5 +39,22 @@ defmodule Db do
 
   def logins_for_client(client) do
     Mongo.find(:mongo, "dialer_logins", %{"client" => client})
+  end
+
+  def calling_users do
+    Db.distinct("agent_events", "caller_email", within_24_hours())
+  end
+
+  def distinct(coll, field, query) do
+    Mongo.distinct!(:mongo, coll, field, query)
+  end
+
+  def within_24_hours do
+    ago = Timex.shift(Timex.now(), hours: -24)
+    %{"timestamp" => %{"$gt" => ago}}
+  end
+
+  def count_calls(query) do
+    Mongo.count!(:mongo, "calls", query)
   end
 end

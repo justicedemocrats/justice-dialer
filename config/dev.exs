@@ -29,8 +29,11 @@ config :actionkit,
 
 config :justice_dialer,
   mongodb_username: System.get_env("MONGO_USERNAME"),
-  mongodb_hostname: System.get_env("MONGO_HOSTNAME"),
   mongodb_password: System.get_env("MONGO_PASSWORD"),
+  mongodb_seeds: [
+    System.get_env("MONGO_SEED_1"),
+    System.get_env("MONGO_SEED_2")
+  ],
   mongodb_port: System.get_env("MONGO_PORT")
 
 config :rollbax,
