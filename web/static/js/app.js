@@ -18,11 +18,10 @@
 // paths "./socket" or full ones "web/static/js/socket".
 
 // import socket from './socket'
-import modernizr from './modernizr'
-import 'phoenix_html'
-import spa from './spa'
-import littleAnalytics from './little-analytics'
+import modernizr from "./modernizr";
+import spa from "./spa";
+import littleAnalytics from "./little-analytics";
 
-spa.bind.all()
-spa.attachHistory()
-littleAnalytics.bind()
+spa.bind.all();
+spa.attachHistory();
+littleAnalytics.bind();
