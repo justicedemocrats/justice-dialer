@@ -50,6 +50,7 @@ defmodule JusticeDialer.PageController do
         rest: rest,
         off_hours: off_hours,
         callable_slugs: callable_slugs,
+        close_time: close_time(candidate),
         draft: draft,
         calling_page_is_down: Cosmic.get("calling-page-is-down")
       ] ++ global_opts
@@ -194,38 +195,77 @@ defmodule JusticeDialer.PageController do
     end
   end
 
-  def on_hours?(%{"metadata" => %{"callable" => "Callable", "time_zone" => time_zone}}) do
+  # 'vulgar' here means literally away from the church, or not a holy day
+  def on_hours?(%{"metadata" => metadata = %{"callable" => "Callable", "time_zone" => time_zone}}) do
     ~m(abbreviation)a = Timex.Timezone.get(time_zone)
     now = time_zone |> Timex.now()
     local_hours = now.hour
-    weekday = Timex.weekday(now)
+    day_of_week = Timex.weekday(now)
 
-    case weekday do
-      n when n in [7] ->
-        cond do
-          local_hours >= 12 and local_hours < 21 -> true
-          local_hours < 12 -> {:before, "12 PM #{abbreviation}"}
-          local_hours >= 21 -> {:after, "10 AM #{abbreviation}"}
-        end
+    [vulgar_open, vulgar_close] =
+      case metadata["open_time_monday_saturday"] do
+        time_range when is_binary(time_range) ->
+          time_range
+          |> String.split("-")
+          |> Enum.map(&(Integer.parse(&1) |> Tuple.to_list() |> List.first()))
 
-      n when n in [6] ->
-        cond do
-          local_hours >= 10 and local_hours < 21 -> true
-          local_hours < 10 -> {:before, "10 AM #{abbreviation}"}
-          local_hours >= 21 -> {:after, "12 PM #{abbreviation}"}
-        end
+        _ ->
+          [10, 21]
+      end
 
-      _n ->
-        cond do
-          local_hours >= 10 and local_hours < 21 -> true
-          local_hours < 10 -> {:before, "10 AM"}
-          local_hours >= 21 -> {:after, "10 AM"}
-        end
+    [holy_open, holy_close] =
+      case metadata["open_time_sunday"] do
+        time_range when is_binary(time_range) ->
+          time_range
+          |> String.split("-")
+          |> Enum.map(&(Integer.parse(&1) |> Tuple.to_list() |> List.first()))
+
+        _ ->
+          [12, 21]
+      end
+
+    times_for = fn
+      7 -> [holy_open, holy_close]
+      _ -> [vulgar_open, vulgar_close]
+    end
+
+    [today_open, today_close] = times_for.(day_of_week)
+    [tomorrow_open, tomorrow_close] = times_for.(day_of_week + 1)
+
+    cond do
+      local_hours >= today_open and local_hours < today_close ->
+        true
+
+      local_hours < today_open ->
+        {:before, "#{today_open} #{if today_open == 12, do: "PM", else: "AM"} #{abbreviation} "}
+
+      local_hours >= today_close ->
+        {:after, "#{tomorrow_open} AM #{abbreviation} "}
     end
   end
 
   def on_hours?(nil) do
     false
+  end
+
+  def close_time(nil) do
+    9
+  end
+
+  def close_time(%{"metadata" => metadata}) do
+    day_of_week = Timex.weekday(Timex.now())
+
+    window_key =
+      case day_of_week do
+        7 -> "open_time_sunday"
+        _ -> "open_time_monday_saturday"
+      end
+
+    Map.get(metadata, window_key, "10-21")
+    |> String.split("-")
+    |> List.last()
+    |> (&(Integer.parse(&1) |> Tuple.to_list() |> List.first())).()
+    |> (&(&1 - 12)).()
   end
 
   defp is_callable(%{"metadata" => %{"callable" => "Callable"}}) do
