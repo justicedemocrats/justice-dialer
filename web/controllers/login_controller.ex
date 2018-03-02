@@ -18,11 +18,22 @@ defmodule JusticeDialer.LoginController do
 
     action_calling_from = params["calling_from"] || "unknown"
 
-    # JusticeDialer.Logins.next_login(client)
+    %{"metadata" => ~m(blacklist)} = Cosmic.get("dialer-blacklist")
+    blacklist = String.split(blacklist, "\n")
+
     ~m(username password) =
-      case current_username do
-        nil -> JusticeDialer.Logins.next_login(client)
-        un -> %{"username" => un, "password" => JusticeDialer.Logins.password_for(un)}
+      cond do
+        Enum.member?(blacklist, email) ->
+          JusticeDialer.Logins.phony(client)
+
+        current_username == nil ->
+          JusticeDialer.Logins.next_login(client)
+
+        true ->
+          %{
+            "username" => current_username,
+            "password" => JusticeDialer.Logins.password_for(current_username)
+          }
       end
 
     Ak.DialerLogin.record_login_claimed(
@@ -93,15 +104,25 @@ defmodule JusticeDialer.LoginController do
   end
 
   def post_iframe(conn, params = ~m(email phone name client)) do
-    date = "#{"America/New_York" |> Timex.now() |> Timex.to_date()}"
-
     current_username = Ak.DialerLogin.existing_login_for_email(email, client)
     action_calling_from = params["calling_from"] || "unknown"
 
-    ~m(username password) = # JusticeDialer.Logins.next_login(client)
-      case current_username do
-        nil -> JusticeDialer.Logins.next_login(client)
-        un -> %{"username" => un, "password" => JusticeDialer.Logins.password_for(un)}
+    %{"metadata" => ~m(blacklist)} = Cosmic.get("dialer-blacklist")
+    blacklist = String.split(blacklist, "\n")
+
+    ~m(username password) =
+      cond do
+        Enum.member?(blacklist, email) ->
+          JusticeDialer.Logins.phony(client)
+
+        current_username == nil ->
+          JusticeDialer.Logins.next_login(client)
+
+        true ->
+          %{
+            "username" => current_username,
+            "password" => JusticeDialer.Logins.password_for(current_username)
+          }
       end
 
     Ak.DialerLogin.record_login_claimed(

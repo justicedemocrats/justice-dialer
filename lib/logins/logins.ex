@@ -34,6 +34,27 @@ defmodule JusticeDialer.Logins do
     Db.find_login(%{"client" => client, "index" => to_fetch})
   end
 
+  def phony("jd") do
+    %{
+      "username" => "JdVol#{Kernel.trunc(:rand.uniform() * 999)}",
+      "password" => random_password()
+    }
+  end
+
+  def phony("beto") do
+    %{
+      "username" => "BetoVol#{Kernel.trunc(:rand.uniform() * 999)}",
+      "password" => random_password()
+    }
+  end
+
+  def phony("bnc") do
+    %{
+      "username" => "BncVol#{Kernel.trunc(:rand.uniform() * 999)}",
+      "password" => random_password()
+    }
+  end
+
   def gen_logins(count, first_name, wrap_up_time, client) do
     1..count
     |> Enum.map(fn n ->
