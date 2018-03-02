@@ -48,3 +48,4 @@ erl_crash.dump
 cosmic_cache
 .env
 .DS_Store
+.elixir_ls

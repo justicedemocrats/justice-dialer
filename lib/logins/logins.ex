@@ -29,7 +29,9 @@ defmodule JusticeDialer.Logins do
 
   def next_login(client) do
     client_count = Db.inc_claimed(client)
-    Db.find_login(%{"client" => client, "index" => client_count})
+    # wrap around 1000 just in case
+    to_fetch = rem(client_count, 1000)
+    Db.find_login(%{"client" => client, "index" => to_fetch})
   end
 
   def gen_logins(count, first_name, wrap_up_time, client) do
