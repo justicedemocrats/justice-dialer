@@ -1,8 +1,5 @@
 defmodule JusticeDialer.LoginController do
-  @secret Application.get_env(:justice_dialer, :update_secret)
-
   use JusticeDialer.Web, :controller
-  import JusticeDialer.BrandHelpers
   import ShortMaps
   require Logger
 
@@ -13,7 +10,6 @@ defmodule JusticeDialer.LoginController do
   def post(conn, params = ~m(email phone name)) do
     global_opts = GlobalOpts.get(conn, params)
     client = Keyword.get(global_opts, :brand)
-    date = "#{"America/New_York" |> Timex.now() |> Timex.to_date()}"
 
     current_username = Ak.DialerLogin.existing_login_for_email(email, client)
 
@@ -67,26 +63,28 @@ defmodule JusticeDialer.LoginController do
     )
   end
 
-  def get_logins(conn, %{"secret" => @secret}) do
-    csv_content =
-      JusticeDialer.Logins.fetch()
-      |> Enum.map(fn line ->
-        Enum.join(line, ",")
-      end)
-      |> Enum.join("\n")
+  def get_logins(conn, %{"secret" => input_secret}) do
+    case Application.get_env(:justice_dialer, :update_secret) do
+      ^input_secret ->
+        csv_content =
+          JusticeDialer.Logins.fetch()
+          |> Enum.map(fn line ->
+            Enum.join(line, ",")
+          end)
+          |> Enum.join("\n")
 
-    conn
-    |> put_resp_content_type("text/csv")
-    |> put_resp_header(
-      "content-disposition",
-      "attachment; filename=\"logins-#{Timex.now() |> DateTime.to_iso8601()}.csv\""
-    )
-    |> send_resp(200, csv_content)
-  end
+        conn
+        |> put_resp_content_type("text/csv")
+        |> put_resp_header(
+          "content-disposition",
+          "attachment; filename=\"logins-#{Timex.now() |> DateTime.to_iso8601()}.csv\""
+        )
+        |> send_resp(200, csv_content)
 
-  def get_logins(conn, %{"secret" => other}) do
-    Logger.info("User supplied #{other}. Should have supplied #{@secret}.")
-    text(conn, "Wrong secret. Contact Ben.")
+      correct_secret ->
+        Logger.info("User supplied #{input_secret} Should have supplied #{correct_secret}.")
+        text(conn, "Wrong secret. Contact Ben.")
+    end
   end
 
   def get_logins(conn, _params) do
@@ -158,7 +156,7 @@ defmodule JusticeDialer.LoginController do
     )
   end
 
-  def who_claimed(conn, params = ~m(client login)) do
+  def who_claimed(conn, _params = ~m(client login)) do
     result =
       case Ak.DialerLogin.who_claimed(client, login) do
         ~m(email calling_from phone) -> ~m(email calling_from phone)
