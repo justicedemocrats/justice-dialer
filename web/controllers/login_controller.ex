@@ -4,6 +4,7 @@ defmodule JusticeDialer.LoginController do
   use JusticeDialer.Web, :controller
   import JusticeDialer.BrandHelpers
   import ShortMaps
+  require Logger
 
   def get(conn, params) do
     render(conn, "login.html", [title: "Call"] ++ GlobalOpts.get(conn, params))
@@ -81,6 +82,18 @@ defmodule JusticeDialer.LoginController do
       "attachment; filename=\"logins-#{Timex.now() |> DateTime.to_iso8601()}.csv\""
     )
     |> send_resp(200, csv_content)
+  end
+
+  def get_logins(conn, %{"secret" => other}) do
+    Logger.info("User supplied #{other}. Should have supplied #{@secret}.")
+    text(conn, "Wrong secret. Contact Ben.")
+  end
+
+  def get_logins(conn, _params) do
+    text(
+      conn,
+      "Missing secret. Proper usage is https://justicedialer.com/logins/download?secret=thingfromben"
+    )
   end
 
   def get_report(conn, params = %{"secret" => @secret}) do
