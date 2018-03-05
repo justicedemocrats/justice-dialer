@@ -11,7 +11,8 @@ defmodule JusticeDialer.LoginController do
     global_opts = GlobalOpts.get(conn, params)
     client = Keyword.get(global_opts, :brand)
 
-    current_username = Ak.DialerLogin.existing_login_for_email(email, client)
+    current_username = nil
+    # current_username = Ak.DialerLogin.existing_login_for_email(email, client)
 
     action_calling_from = params["calling_from"] || "unknown"
 
