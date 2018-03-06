@@ -11,8 +11,8 @@ defmodule JusticeDialer.LoginController do
     global_opts = GlobalOpts.get(conn, params)
     client = Keyword.get(global_opts, :brand)
 
-    current_username = nil
-    # current_username = Ak.DialerLogin.existing_login_for_email(email, client)
+    # current_username = nil
+    current_username = Ak.DialerLogin.existing_login_for_email(email, client)
 
     action_calling_from = params["calling_from"] || "unknown"
 
@@ -116,8 +116,8 @@ defmodule JusticeDialer.LoginController do
   end
 
   def post_iframe(conn, params = ~m(email phone name client)) do
-    # current_username = Ak.DialerLogin.existing_login_for_email(email, client)
-    current_username = nil
+    # current_username = nil
+    current_username = Ak.DialerLogin.existing_login_for_email(email, client)
     action_calling_from = params["calling_from"] || "unknown"
 
     %{"metadata" => ~m(blacklist)} = Cosmic.get("dialer-blacklist")
