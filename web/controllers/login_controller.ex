@@ -138,11 +138,13 @@ defmodule JusticeDialer.LoginController do
           }
       end
 
-    Ak.DialerLogin.record_login_claimed(
-      ~m(email phone name action_calling_from),
-      username,
-      client,
-      false
+    IO.inspect(
+      Ak.DialerLogin.record_login_claimed(
+        ~m(email phone name action_calling_from),
+        username,
+        client,
+        false
+      )
     )
 
     conn
