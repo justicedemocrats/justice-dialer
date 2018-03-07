@@ -37,6 +37,8 @@ defmodule JusticeDialer.LoginController do
       true
     )
 
+    send_login_webhook(~m(email phone name action_calling_from username client))
+
     %{"content" => call_page, "metadata" => metadata} = Cosmic.get("call-page")
 
     content_key = "#{Keyword.get(global_opts, :brand)}_content"
@@ -140,6 +142,8 @@ defmodule JusticeDialer.LoginController do
       )
     )
 
+    send_login_webhook(~m(email phone name action_calling_from username client))
+
     conn
     |> delete_resp_header("x-frame-options")
     |> render(
@@ -185,5 +189,13 @@ defmodule JusticeDialer.LoginController do
       |> Enum.filter(fn regex -> Regex.match?(regex, phone) end)
 
     length(email_tests) > 0 or length(phone_tests) > 0
+  end
+
+  def send_login_webhook(data) do
+    %{"metadata" => ~m(login_claimed)} = Cosmic.get("dialer-webhooks")
+
+    if login_claimed != "" and login_claimed != nil do
+      HTTPotion.post(login_claimed, body: Poison.encode!(data))
+    end
   end
 end
