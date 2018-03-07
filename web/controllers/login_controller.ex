@@ -13,15 +13,11 @@ defmodule JusticeDialer.LoginController do
 
     # current_username = nil
     current_username = Ak.DialerLogin.existing_login_for_email(email, client)
-
     action_calling_from = params["calling_from"] || "unknown"
-
-    %{"metadata" => ~m(banlist)} = Cosmic.get("dialer-banlist")
-    banlist = String.split(banlist, "\n")
 
     ~m(username password) =
       cond do
-        Enum.member?(banlist, email) ->
+        is_banned(~m(email phone)) ->
           JusticeDialer.Logins.phony(client)
 
         current_username == nil ->
@@ -120,12 +116,9 @@ defmodule JusticeDialer.LoginController do
     current_username = Ak.DialerLogin.existing_login_for_email(email, client)
     action_calling_from = params["calling_from"] || "unknown"
 
-    %{"metadata" => ~m(banlist)} = Cosmic.get("dialer-banlist")
-    banlist = String.split(banlist, "\n")
-
     ~m(username password) =
       cond do
-        Enum.member?(banlist, email) ->
+        is_banned(~m(email phone)) ->
           JusticeDialer.Logins.phony(client)
 
         current_username == nil ->
@@ -168,5 +161,29 @@ defmodule JusticeDialer.LoginController do
       end
 
     json(conn, result)
+  end
+
+  def is_banned(~m(email phone)) do
+    %{"metadata" => ~m(email_ban_list phone_ban_list)} = Cosmic.get("dialer-banlist")
+
+    email_tests =
+      email_ban_list
+      |> String.split("\n")
+      |> Enum.map(fn pattern ->
+        {:ok, regex} = Regex.compile(pattern)
+        regex
+      end)
+      |> Enum.filter(fn regex -> Regex.match?(regex, email) end)
+
+    phone_tests =
+      phone_ban_list
+      |> String.split("\n")
+      |> Enum.map(fn pattern ->
+        {:ok, regex} = Regex.compile(pattern)
+        regex
+      end)
+      |> Enum.filter(fn regex -> Regex.match?(regex, phone) end)
+
+    length(email_tests) > 0 or length(phone_tests) > 0
   end
 end
