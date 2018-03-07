@@ -16,12 +16,12 @@ defmodule JusticeDialer.LoginController do
 
     action_calling_from = params["calling_from"] || "unknown"
 
-    %{"metadata" => ~m(blacklist)} = Cosmic.get("dialer-blacklist")
-    blacklist = String.split(blacklist, "\n")
+    %{"metadata" => ~m(banlist)} = Cosmic.get("dialer-banlist")
+    banlist = String.split(banlist, "\n")
 
     ~m(username password) =
       cond do
-        Enum.member?(blacklist, email) ->
+        Enum.member?(banlist, email) ->
           JusticeDialer.Logins.phony(client)
 
         current_username == nil ->
@@ -120,12 +120,12 @@ defmodule JusticeDialer.LoginController do
     current_username = Ak.DialerLogin.existing_login_for_email(email, client)
     action_calling_from = params["calling_from"] || "unknown"
 
-    %{"metadata" => ~m(blacklist)} = Cosmic.get("dialer-blacklist")
-    blacklist = String.split(blacklist, "\n")
+    %{"metadata" => ~m(banlist)} = Cosmic.get("dialer-banlist")
+    banlist = String.split(banlist, "\n")
 
     ~m(username password) =
       cond do
-        Enum.member?(blacklist, email) ->
+        Enum.member?(banlist, email) ->
           JusticeDialer.Logins.phony(client)
 
         current_username == nil ->
