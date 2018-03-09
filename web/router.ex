@@ -48,6 +48,8 @@ defmodule JusticeDialer.Router do
     pipe_through(:api)
 
     get("/call/who-claimed/:client/:login", LoginController, :who_claimed)
+    post("/call/who-claimed-many/:client", LoginController, :who_claimed_many)
+
     get("/update/cosmic", UpdateController, :cosmic)
     post("/update/cosmic", UpdateController, :cosmic)
   end

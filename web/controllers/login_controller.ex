@@ -167,6 +167,21 @@ defmodule JusticeDialer.LoginController do
     json(conn, result)
   end
 
+  def who_claimed_many(conn, _params = ~m(client logins)) do
+    results =
+      Enum.map(logins, fn login ->
+        Task.async(fn ->
+          case Ak.DialerLogin.who_claimed(client, login) do
+            ~m(email calling_from phone) -> ~m(login email calling_from phone)
+            nil -> nil
+          end
+        end)
+      end)
+      |> Enum.map(&Task.await(&1, 10_000))
+
+    json(conn, results)
+  end
+
   def is_banned(~m(email phone)) do
     %{"metadata" => ~m(email_ban_list phone_ban_list)} = Cosmic.get("dialer-banlist")
 
