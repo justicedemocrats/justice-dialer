@@ -130,6 +130,8 @@ defmodule JusticeDialer.LoginController do
 
   def post_iframe(conn, params = ~m(email phone name client)) do
     TwoFactor.send_code(phone, Map.get(params, "verification_method", "text"))
+    use_post_sign = Map.has_key?(params, "post_sign")
+    post_sign_url = Map.get(params, "post_sign")
 
     conn
     |> put_resp_cookie("email", email)
@@ -142,7 +144,9 @@ defmodule JusticeDialer.LoginController do
       "two-factor-iframe.html",
       phone: phone,
       client: client,
-      layout: {JusticeDialer.LayoutView, "empty.html"}
+      layout: {JusticeDialer.LayoutView, "empty.html"},
+      use_post_sign: use_post_sign,
+      post_sign_url: post_sign_url
     )
   end
 
@@ -181,7 +185,10 @@ defmodule JusticeDialer.LoginController do
       |> delete_resp_header("x-frame-options")
       |> render(
         "login-iframe-claimed.html",
-        Enum.into(~m(username password layout post_sign_url use_post_sign client)a, [])
+        Enum.into(
+          ~m(username password layout post_sign_url use_post_sign client)a |> IO.inspect(),
+          []
+        )
       )
     else
       conn

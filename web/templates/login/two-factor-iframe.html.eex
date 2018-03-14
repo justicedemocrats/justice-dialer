@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="https://cdn.shoelace.style/1.0.0-beta24/shoelace.css">
 <div class="container" style="padding: 20%;">
   <%= if assigns[:error] != nil do %>
-    <div class="alert alert-danger"> @error </div>
+    <div class="alert alert-danger"> <%= @error %> </div>
     <div class="input-field">
       Type your number wrong?
       <a href="/login/<%= @client %>">
@@ -14,6 +14,9 @@
     <fieldset>
       <legend> Enter the code that was sent to <%= @phone %>.</legend>
       <input type="hidden" name="_csrf_token" value="<%= csrf_token() %>" />
+      <%= if @use_post_sign do %>
+        <input type="hidden" name="post_sign" value="<%= @post_sign_url %>">
+      <% end %>
 
       <div class="input-field">
         <label> Your code here: </label>

@@ -21,31 +21,9 @@ defmodule JusticeDialer.Mixfile do
   def application do
     [
       mod: {JusticeDialer, []},
-      applications: [
-        :phoenix,
-        :phoenix_pubsub,
-        :phoenix_html,
-        :cowboy,
+      extra_applications: [
         :logger,
-        :gettext,
-        :phoenix_ecto,
-        :postgrex,
-        :httpotion,
-        :phoenix_swoosh,
-        :timex,
-        :quantum,
-        :browser,
-        :csv,
-        :html_sanitize_ex,
-        :number,
-        :stash,
-        :cosmic,
-        :actionkit,
-        :short_maps,
-        :mongodb,
-        :rollbax,
-        :ex_twilio,
-        :ex_twiml
+        :gettext
       ]
     ]
   end
@@ -85,7 +63,8 @@ defmodule JusticeDialer.Mixfile do
       {:rollbax, "~> 0.6"},
       {:mongodb, "~> 0.4.3"},
       {:ex_twilio, "~> 0.5.1"},
-      {:ex_twiml, "~> 2.1.3"}
+      {:ex_twiml, "~> 2.1.3"},
+      {:airtable_config, git: "https://github.com/justicedemocrats/airtable_config.git"}
     ]
   end
 
