@@ -128,7 +128,7 @@ defmodule JusticeDialer.LoginController do
     |> render("two-factor.html", [phone: phone] ++ GlobalOpts.get(conn, params))
   end
 
-  def post_iframe(conn, params = ~m(email phone name client )) do
+  def post_iframe(conn, params = ~m(email phone name client)) do
     TwoFactor.send_code(phone, Map.get(params, "verification_method", "text"))
 
     conn
@@ -137,10 +137,10 @@ defmodule JusticeDialer.LoginController do
     |> put_resp_cookie("name", name)
     |> put_resp_cookie("client", client)
     |> put_resp_cookie("calling_from", params["calling_from"])
+    |> delete_resp_header("x-frame-options")
     |> render(
       "two-factor-iframe.html",
       phone: phone,
-      error: nil,
       client: client,
       layout: {JusticeDialer.LayoutView, "empty.html"}
     )
@@ -184,8 +184,9 @@ defmodule JusticeDialer.LoginController do
         Enum.into(~m(username password layout post_sign_url use_post_sign client)a, [])
       )
     else
-      render(
-        conn,
+      conn
+      |> delete_resp_header("x-frame-options")
+      |> render(
         "two-factor-iframe.html",
         phone: phone,
         error: "Incorrect code.",
