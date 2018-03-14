@@ -58,7 +58,9 @@ config :ex_twilio,
 
 config :justice_dialer,
   two_factor_from_number: "${TWO_FACTOR_FROM_NUMBER}",
-  two_factor_callback_url: "${TWO_FACTOR_CALLBACK_URL}"
+  two_factor_callback_url: "${TWO_FACTOR_CALLBACK_URL}",
+  airtable_key: "${AIRTABLE_KEY}",
+  airtable_base: "${AIRTABLE_BASE}"
 
 config :rollbax,
   access_token: "${ROLLBAR_ACCESS_TOKEN}",
