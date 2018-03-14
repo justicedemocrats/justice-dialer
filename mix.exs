@@ -43,7 +43,9 @@ defmodule JusticeDialer.Mixfile do
         :actionkit,
         :short_maps,
         :mongodb,
-        :rollbax
+        :rollbax,
+        :ex_twilio,
+        :ex_twiml
       ]
     ]
   end
