@@ -52,6 +52,14 @@ config :justice_dialer,
   mongodb_password: "${MONGO_PASSWORD}",
   mongodb_port: "${MONGO_PORT}"
 
+config :ex_twilio,
+  account_sid: "${TWILIO_ACCOUNT_SID}",
+  auth_token: "${TWILIO_AUTH_TOKEN}"
+
+config :justice_dialer,
+  two_factor_from_number: "${TWO_FACTOR_FROM_NUMBER}",
+  two_factor_callback_url: "${TWO_FACTOR_CALLBACK_URL}"
+
 config :rollbax,
   access_token: "${ROLLBAR_ACCESS_TOKEN}",
   environment: "production"

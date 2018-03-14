@@ -2,64 +2,10 @@ defmodule JusticeDialer.LoginController do
   use JusticeDialer.Web, :controller
   import ShortMaps
   require Logger
+  alias JusticeDialer.TwoFactor
 
   def get(conn, params) do
     render(conn, "login.html", [title: "Call"] ++ GlobalOpts.get(conn, params))
-  end
-
-  def post(conn, params = ~m(email phone name)) do
-    global_opts = GlobalOpts.get(conn, params)
-    client = Keyword.get(global_opts, :brand)
-
-    # current_username = nil
-    current_username = Ak.DialerLogin.existing_login_for_email(email, client)
-    action_calling_from = params["calling_from"] || "unknown"
-
-    ~m(username password) =
-      cond do
-        is_banned(~m(email phone)) ->
-          JusticeDialer.Logins.phony(client)
-
-        current_username == nil ->
-          JusticeDialer.Logins.next_login(client)
-
-        true ->
-          %{
-            "username" => current_username,
-            "password" => JusticeDialer.Logins.password_for(current_username)
-          }
-      end
-
-    Ak.DialerLogin.record_login_claimed(
-      ~m(email phone name action_calling_from),
-      username,
-      client,
-      true
-    )
-
-    send_login_webhook(~m(email phone name action_calling_from username client))
-
-    %{"content" => call_page, "metadata" => metadata} = Cosmic.get("call-page")
-
-    content_key = "#{Keyword.get(global_opts, :brand)}_content"
-
-    chosen_content =
-      if metadata[content_key] && metadata[content_key] != "" do
-        metadata[content_key]
-      else
-        call_page
-      end
-
-    render(
-      conn,
-      "login-submitted.html",
-      [
-        username: String.trim(username),
-        password: String.trim(password),
-        title: "Call",
-        call_page: chosen_content
-      ] ++ global_opts
-    )
   end
 
   def get_logins(conn, %{"secret" => input_secret}) do
@@ -110,50 +56,6 @@ defmodule JusticeDialer.LoginController do
       layout: {JusticeDialer.LayoutView, "empty.html"},
       use_post_sign: Map.has_key?(params, "post_sign"),
       post_sign_url: Map.get(params, "post_sign")
-    )
-  end
-
-  def post_iframe(conn, params = ~m(email phone name client)) do
-    # current_username = nil
-    current_username = Ak.DialerLogin.existing_login_for_email(email, client)
-    action_calling_from = params["calling_from"] || "unknown"
-
-    ~m(username password) =
-      cond do
-        is_banned(~m(email phone)) ->
-          JusticeDialer.Logins.phony(client)
-
-        current_username == nil ->
-          JusticeDialer.Logins.next_login(client)
-
-        true ->
-          %{
-            "username" => current_username,
-            "password" => JusticeDialer.Logins.password_for(current_username)
-          }
-      end
-
-    IO.inspect(
-      Ak.DialerLogin.record_login_claimed(
-        ~m(email phone name action_calling_from),
-        username,
-        client,
-        false
-      )
-    )
-
-    send_login_webhook(~m(email phone name action_calling_from username client))
-
-    conn
-    |> delete_resp_header("x-frame-options")
-    |> render(
-      "login-iframe-claimed.html",
-      username: String.trim(username),
-      password: String.trim(password),
-      client: client,
-      use_post_sign: Map.has_key?(params, "post_sign"),
-      post_sign_url: Map.get(params, "post_sign"),
-      layout: {JusticeDialer.LayoutView, "empty.html"}
     )
   end
 
@@ -212,5 +114,136 @@ defmodule JusticeDialer.LoginController do
     if login_claimed != "" and login_claimed != nil do
       HTTPotion.post(login_claimed, body: Poison.encode!(data))
     end
+  end
+
+  def post(conn, params = ~m(email phone name)) do
+    client = "jd"
+    TwoFactor.send_code(phone, Map.get(params, "verification_method", "text"))
+
+    conn
+    |> put_resp_cookie("email", email)
+    |> put_resp_cookie("phone", phone)
+    |> put_resp_cookie("name", name)
+    |> put_resp_cookie("calling_from", params["calling_from"])
+    |> render("two-factor.html", [phone: phone] ++ GlobalOpts.get(conn, params))
+  end
+
+  def post_iframe(conn, params = ~m(email phone name client )) do
+    TwoFactor.send_code(phone, Map.get(params, "verification_method", "text"))
+
+    conn
+    |> put_resp_cookie("email", email)
+    |> put_resp_cookie("phone", phone)
+    |> put_resp_cookie("name", name)
+    |> put_resp_cookie("client", client)
+    |> put_resp_cookie("calling_from", params["calling_from"])
+    |> render(
+      "two-factor-iframe.html",
+      phone: phone,
+      error: nil,
+      client: client,
+      layout: {JusticeDialer.LayoutView, "empty.html"}
+    )
+  end
+
+  def post_two_factor(conn, params = ~m(code)) do
+    phone = conn.cookies["phone"]
+
+    if TwoFactor.is_correct_code?(phone, code) do
+      ~m(username password) = claim_login(conn.cookies, "jd")
+      title = "Call"
+      %{"content" => call_page} = Cosmic.get("call-page")
+
+      render(
+        conn,
+        "login-submitted.html",
+        Enum.into(~m(username password title call_page)a, []) ++ GlobalOpts.get(conn, params)
+      )
+    else
+      render(
+        conn,
+        "two-factor.html",
+        [phone: phone, error: "Incorrect code."] ++ GlobalOpts.get(conn, params)
+      )
+    end
+  end
+
+  def post_two_factor_iframe(conn, params = ~m(code client)) do
+    phone = conn.cookies["phone"]
+
+    if TwoFactor.is_correct_code?(phone, code) do
+      ~m(username password) = claim_login(conn.cookies, client)
+      use_post_sign = Map.has_key?(params, "post_sign")
+      post_sign_url = Map.get(params, "post_sign")
+      layout = {JusticeDialer.LayoutView, "empty.html"}
+
+      conn
+      |> delete_resp_header("x-frame-options")
+      |> render(
+        "login-iframe-claimed.html",
+        Enum.into(~m(username password layout post_sign_url use_post_sign client)a, [])
+      )
+    else
+      render(
+        conn,
+        "two-factor-iframe.html",
+        phone: phone,
+        error: "Incorrect code.",
+        client: client,
+        layout: {JusticeDialer.LayoutView, "empty.html"}
+      )
+    end
+  end
+
+  def claim_login(params = ~m(email phone name), client) do
+    current_username = Ak.DialerLogin.existing_login_for_email(email, client)
+    action_calling_from = params["calling_from"] || "unknown"
+
+    ~m(username password) =
+      cond do
+        is_banned(~m(email phone)) ->
+          JusticeDialer.Logins.phony(client)
+
+        current_username == nil ->
+          JusticeDialer.Logins.next_login(client)
+
+        true ->
+          %{
+            "username" => current_username,
+            "password" => JusticeDialer.Logins.password_for(current_username)
+          }
+      end
+
+    spawn(fn ->
+      Ak.DialerLogin.record_login_claimed(
+        ~m(email phone name action_calling_from),
+        username,
+        client,
+        true
+      )
+
+      send_login_webhook(~m(email phone name action_calling_from username client))
+    end)
+
+    ~m(username password)
+  end
+
+  def callback(conn, params = ~m(To)) do
+    code =
+      TwoFactor.code_for(params["To"])
+      |> String.split("")
+      |> Enum.filter(&(&1 != " "))
+      |> Enum.join(", ")
+      |> String.trim()
+
+    message =
+      "Your dialer verification code is #{code}. Once again, that is #{code}. Thank you for making calls."
+
+    twiml = JusticeDialer.Twiml.say_message(message)
+    IO.puts(twiml)
+
+    conn
+    |> put_resp_content_type("application/xml")
+    |> send_resp(200, twiml)
   end
 end

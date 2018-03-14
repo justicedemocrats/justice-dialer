@@ -1,4 +1,4 @@
-<div class="two-column">
+<div class="container" style="padding: 10%;">
   <%= if @brand == "jd" do %>
     <!-- Start of justicedemocrats Zendesk Widget script -->
     <script>/*<![CDATA[*/window.zEmbed||function(e,t){var n,o,d,i,s,a=[],r=document.createElement("iframe");window.zEmbed=function(){a.push(arguments)},window.zE=window.zE||window.zEmbed,r.src="javascript:false",r.title="",r.role="presentation",(r.frameElement||r).style.cssText="display: none",d=document.getElementsByTagName("script"),d=d[d.length-1],d.parentNode.insertBefore(r,d),i=r.contentWindow,s=i.document;try{o=s}catch(e){n=document.domain,r.src='javascript:var d=document.open();d.domain="'+n+'";void(0);',o=s}o.open()._l=function(){var e=this.createElement("script");n&&(this.domain=n),e.id="js-iframe-async",e.src="https://assets.zendesk.com/embeddable_framework/main.js",this.t=+new Date,this.zendeskHost="justicedemocrats.zendesk.com",this.zEQueue=a,this.body.appendChild(e)},o.write('<body onload="document._l();">'),o.close()}();
@@ -6,39 +6,44 @@
     <!-- End of justicedemocrats Zendesk Widget script -->
   <% end %>
 
-  <div class="right-column">
-    <div class="external-content-wrapper">
-      <p>
-        Enter your email and phone number to get your daily dialer login..
-      </p>
-    </div>
+  <fieldset>
+    <legend> Claim your login to the Justice Dialer </legend>
     <%= form_tag("/login", method: :post) %>
-      <div class="petition-container">
         <input type="hidden" name="_csrf_token" value="<%= csrf_token() %>" />
-        <div>
+        <div class="input-field">
           <label>Name</label>
           <input class="text" type="text" name="name" required="required"/>
         </div>
-        <div>
+        <div class="input-field">
           <label>Email</label>
           <input class="text" type="email" name="email" required="required"/>
         </div>
-        <div>
+        <div class="input-field">
           <label>Phone</label>
           <input class="text" type="tel" name="phone" maxlength="10" required="required" />
         </div>
         <br/>
         <div class="input-field">
           <label>Where are you calling from?</label>
-          <label> <input name="calling_from" type="radio" value="home" /> Home</label>
+          <br/>
+          <label> <input name="calling_from" type="radio" value="home" required="true" /> Home</label>
+          <br/>
           <label> <input name="calling_from" type="radio" value="vol-pb" /> Volunteer-hosted phone bank</label>
+          <br/>
           <label> <input name="calling_from" type="radio" value="campaign-office" /> Campaign office</label>
+          <br/>
           <label> <input name="calling_from" type="radio" value="campaign-pb" /> Campaign-hosted phone bank</label>
         </div>
-        <div style="text-align: center; width: calc(100% + 2em);">
-          <input class="petition-submit" type="submit" value="Start Making Calls">
+        <div class="input-field">
+          <label> We'll need to verify your phone in order to get you in the dialer. Should we text you, or call you? </label>
+          <br/>
+          <label> <input name="verification_method" type="radio" value="text" required="true" /> Text me, I'm using a cell phone </label>
+          <br/>
+          <label> <input name="verification_method" type="radio" value="call" /> Call me, I'm using a landline </label>
         </div>
-      </div>
+        <div class="input-field">
+          <input class="button" type="submit" value="Get Your Login">
+        </div>
     </form>
   </div>
 </div>

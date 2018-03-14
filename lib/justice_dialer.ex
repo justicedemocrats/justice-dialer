@@ -28,7 +28,8 @@ defmodule JusticeDialer do
           seeds: Application.get_env(:justice_dialer, :mongodb_seeds),
           port: Application.get_env(:justice_dialer, :mongodb_port)
         )
-      ])
+      ]),
+      worker(JusticeDialer.TwoFactor, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

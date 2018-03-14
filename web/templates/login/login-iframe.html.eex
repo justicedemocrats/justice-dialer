@@ -9,8 +9,7 @@
 <link rel="stylesheet" href="https://cdn.shoelace.style/1.0.0-beta24/shoelace.css">
 <div style="padding: 30px;">
   <%= form_tag(post_url, method: :post) %>
-    <div class="petition-container">
-      <input type="hidden" name="_csrf_token" value="<%= csrf_token() %>" />
+    <input type="hidden" name="_csrf_token" value="<%= csrf_token() %>" />
       <div class="input-field">
         <label>Name</label>
         <input class="text" type="text" name="name" required="required"/>
@@ -23,20 +22,27 @@
         <label>Phone</label>
         <input class="text" type="tel" name="phone" maxlength="10" required="required" />
       </div>
+      <br/>
       <div class="input-field">
         <label>Where are you calling from?</label>
         <br/>
-        <input name="calling_from" type="radio" value="home" /> <label>Home</label>
+        <label> <input name="calling_from" type="radio" value="home" required="true" /> Home</label>
         <br/>
-        <input name="calling_from" type="radio" value="vol-pb" /> <label>Volunteer-hosted phone bank</label>
+        <label> <input name="calling_from" type="radio" value="vol-pb" /> Volunteer-hosted phone bank</label>
         <br/>
-        <input name="calling_from" type="radio" value="campaign-office" /> <label>Campaign office</label>
+        <label> <input name="calling_from" type="radio" value="campaign-office" /> Campaign office</label>
         <br/>
-        <input name="calling_from" type="radio" value="campaign-pb" /> <label>Campaign-hosted phone bank</label>
+        <label> <input name="calling_from" type="radio" value="campaign-pb" /> Campaign-hosted phone bank</label>
       </div>
       <div class="input-field">
-        <input class="button" type="submit" value="Claim My Login">
+        <label> We'll need to verify your phone in order to get you in the dialer. Should we text you, or call you? </label>
+        <br/>
+        <label> <input name="verification_method" type="radio" value="text" required="true" /> Text me, I'm using a cell phone </label>
+        <br/>
+        <label> <input name="verification_method" type="radio" value="call" /> Call me, I'm using a landline </label>
       </div>
-    </div>
+      <div class="input-field">
+        <input class="button" type="submit" value="Get Your Login">
+      </div>
   </form>
 </div>

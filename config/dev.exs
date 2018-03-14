@@ -36,6 +36,14 @@ config :justice_dialer,
   ],
   mongodb_port: System.get_env("MONGO_PORT")
 
+config :ex_twilio,
+  account_sid: System.get_env("TWILIO_ACCOUNT_SID"),
+  auth_token: System.get_env("TWILIO_AUTH_TOKEN")
+
+config :justice_dialer,
+  two_factor_from_number: System.get_env("TWO_FACTOR_FROM_NUMBER"),
+  two_factor_callback_url: System.get_env("TWO_FACTOR_CALLBACK_URL")
+
 config :rollbax,
   access_token: System.get_env("ROLLBAR_ACCESS_TOKEN"),
   environment: "production"

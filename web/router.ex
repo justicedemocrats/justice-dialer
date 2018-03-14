@@ -30,6 +30,7 @@ defmodule JusticeDialer.Router do
     get("/login", LoginController, :get)
     get("/logins/download", LoginController, :get_logins)
     post("/login", LoginController, :post)
+    post("/two-factor", LoginController, :post_two_factor)
 
     get("/info/:info", InfoController, :get)
 
@@ -42,6 +43,7 @@ defmodule JusticeDialer.Router do
 
     get("/login-iframe/:client", LoginController, :get_iframe)
     post("/login-iframe/:client", LoginController, :post_iframe)
+    post("/two-factor-iframe/:client", LoginController, :post_two_factor_iframe)
   end
 
   scope "/api", JusticeDialer do
@@ -52,6 +54,8 @@ defmodule JusticeDialer.Router do
 
     get("/update/cosmic", UpdateController, :cosmic)
     post("/update/cosmic", UpdateController, :cosmic)
+
+    post("/callback", LoginController, :callback)
   end
 
   defp handle_errors(conn, %{kind: kind, reason: reason, stack: stacktrace}) do

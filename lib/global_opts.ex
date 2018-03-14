@@ -1,5 +1,5 @@
 defmodule GlobalOpts do
-  defp get_brand(conn, params) do
+  defp get_brand(_conn, _params) do
     "jd"
   end
 

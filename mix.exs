@@ -81,7 +81,9 @@ defmodule JusticeDialer.Mixfile do
       {:short_maps, "~> 0.1.2"},
       {:actionkit, git: "https://github.com/justicedemocrats/actionkit_ex.git"},
       {:rollbax, "~> 0.6"},
-      {:mongodb, "~> 0.4.3"}
+      {:mongodb, "~> 0.4.3"},
+      {:ex_twilio, "~> 0.5.1"},
+      {:ex_twiml, "~> 2.1.3"}
     ]
   end
 

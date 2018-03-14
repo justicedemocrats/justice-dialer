@@ -1,0 +1,32 @@
+<div class="container" style="padding: 20%;">
+  <%= if assigns[:error] != nil do %>
+    <div class="alert alert-danger"> <%= @error %> </div>
+    <div class="input-field">
+      Type your number wrong?
+      <a href="/login">
+        Try again.
+      </a>
+    </div>
+  <% end %>
+
+  <form action="/two-factor" method="post">
+    <fieldset>
+      <legend> Enter the code that was sent to <%= @phone %>.</legend>
+      <input type="hidden" name="_csrf_token" value="<%= csrf_token() %>" />
+
+      <div class="input-field">
+        <label> Your code here: </label>
+        <input type="text" name="code" />
+      </div>
+
+      <button type="submit" class="button"> Submit </button>
+    </fieldset>
+
+    <div class="input-field">
+      Didn't get a code or type your number wrong?
+      <a href="/login">
+        Try again.
+      </a>
+    </div>
+  </form>
+</div>
