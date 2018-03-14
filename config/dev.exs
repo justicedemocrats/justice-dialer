@@ -42,9 +42,7 @@ config :ex_twilio,
 
 config :justice_dialer,
   two_factor_from_number: System.get_env("TWO_FACTOR_FROM_NUMBER"),
-  two_factor_callback_url: System.get_env("TWO_FACTOR_CALLBACK_URL"),
-  airtable_key: System.get_env("AIRTABLE_KEY"),
-  airtable_base: System.get_env("AIRTABLE_BASE")
+  two_factor_callback_url: System.get_env("TWO_FACTOR_CALLBACK_URL")
 
 config :rollbax,
   access_token: System.get_env("ROLLBAR_ACCESS_TOKEN"),
