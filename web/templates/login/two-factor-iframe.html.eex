@@ -4,7 +4,7 @@
     <div class="alert alert-danger"> <%= @error %> </div>
     <div class="input-field">
       Type your number wrong?
-      <a href="/login/<%= @client %>">
+
         Try again.
       </a>
     </div>
@@ -28,8 +28,11 @@
 
     <div class="input-field">
       Didn't get a code or type your number wrong?
-      <a href="/login-iframe/<%= @client %>">
-        Try again.
+      <%= if @use_post_sign do %>
+        <a href="/login-iframe/<%= @client %>?post_sign=<%= @post_sign_url %>">
+      <% else %>
+        <a href="/login-iframe/<%= @client %>">
+      <% end %>        Try again.
       </a>
     </div>
 
