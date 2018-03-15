@@ -13,11 +13,13 @@ defmodule JusticeDialer.LoginConfig do
   end
 
   def process_record(~m(fields)) do
+    display_name = fields["Reference Name"]
     prefix = fields["Login Prefix"]
     service_group = fields["Service Group"]
     count = fields["Count"]
     client = fields["Iframe Slug"]
     is_group = fields["Is Group"] == true
+    wrap_up = fields["Wrap Up Time"]
 
     custom_services =
       case fields["Custom Services"] do
@@ -25,6 +27,7 @@ defmodule JusticeDialer.LoginConfig do
         str -> String.split(str, ",") |> Enum.map(&String.trim(&1))
       end
 
-    ~m(prefix custom_services service_group count client is_group)
+    ~m(prefix custom_services service_group count
+       client is_group wrap_up display_name)
   end
 end

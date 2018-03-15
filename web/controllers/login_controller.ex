@@ -5,7 +5,11 @@ defmodule JusticeDialer.LoginController do
   alias JusticeDialer.TwoFactor
 
   def get(conn, params) do
-    render(conn, "login.html", [title: "Call"] ++ GlobalOpts.get(conn, params))
+    groups =
+      JusticeDialer.LoginConfig.get_all()
+      |> Enum.filter(& &1["is_group"])
+
+    render(conn, "login.html", [title: "Call", groups: groups] ++ GlobalOpts.get(conn, params))
   end
 
   def get_logins(conn, %{"secret" => input_secret}) do
@@ -174,11 +178,11 @@ defmodule JusticeDialer.LoginController do
 
   def post_two_factor_iframe(conn, params = ~m(code client)) do
     phone = conn.cookies["phone"]
+    use_post_sign = Map.has_key?(params, "post_sign")
+    post_sign_url = Map.get(params, "post_sign")
 
     if TwoFactor.is_correct_code?(phone, code) do
       ~m(username password) = claim_login(conn.cookies, client)
-      use_post_sign = Map.has_key?(params, "post_sign")
-      post_sign_url = Map.get(params, "post_sign")
       layout = {JusticeDialer.LayoutView, "empty.html"}
 
       conn

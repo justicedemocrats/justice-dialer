@@ -8,20 +8,22 @@ defmodule JusticeDialer.Logins do
          |> Enum.map(fn {:ok, word} -> word end)
 
   def reset do
+    pools = JusticeDialer.LoginConfig.get_all()
+    clients = Enum.map(pools, & &1["client"])
+
     logins =
-      Enum.concat([
-        gen_logins(1000, "BncVol", 60, "bnc"),
-        gen_logins(3000, "JdVol", 60, "jd"),
-        gen_logins(1000, "BetoVol", 90, "beto"),
-        gen_logins(100, "BetoStaff", 300, "beto-staff")
-      ])
+      pools
+      |> Enum.map(fn ~m(count wrap_up client prefix) ->
+        gen_logins(count, prefix, wrap_up, client)
+      end)
+      |> Enum.concat()
 
     Db.delete_logins()
     Logger.info("[dialer-update] deleted yesterday's logins")
     Db.insert_logins(logins)
     Logger.info("[dialer-update] inserted new logins")
 
-    Enum.each(~w(bnc jd beto beto-staff), fn client ->
+    Enum.each(clients, fn client ->
       Db.reset_claimed(client)
       Logger.info("[dialer-update] reset claimed for #{client}")
     end)
@@ -82,7 +84,9 @@ defmodule JusticeDialer.Logins do
   end
 
   def fetch do
-    Enum.flat_map(~w(beto beto-staff bnc jd), fn client ->
+    pools = JusticeDialer.LoginConfig.get_all()
+
+    Enum.flat_map(pools, fn pool = ~m(client) ->
       Db.logins_for_client(client)
       |> Enum.map(fn l ->
         ~m(username first_name last_name password wrap_up_time) = l
@@ -101,21 +105,13 @@ defmodule JusticeDialer.Logins do
             "",
             ""
           ],
-          services_for(client)
+          services_for(pool)
         )
       end)
     end)
   end
 
-  def services_for("beto") do
-    [1_011_627]
-  end
-
-  def services_for("beto-staff") do
-    [1_012_486, 1_011_627]
-  end
-
-  def services_for(client) do
+  def services_for(%{"service_group" => client}) when not is_nil(client) do
     if Timex.now("America/Los_Angeles").hour < 12 do
       services_for(client, fn _ -> true end)
     else
@@ -142,5 +138,9 @@ defmodule JusticeDialer.Logins do
           ["#{int}"]
       end
     )
+  end
+
+  def services_for(%{"custom_services" => services}) when is_list(services) do
+    services
   end
 end

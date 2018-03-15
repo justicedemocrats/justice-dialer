@@ -20,16 +20,17 @@ defmodule JusticeDialer do
       worker(Ak.Signup, []),
       worker(Ak.Petition, []),
       worker(Mongo, [
-        IO.inspect(
+        [
           name: :mongo,
           database: "livevox",
           username: Application.get_env(:justice_dialer, :mongodb_username),
           password: Application.get_env(:justice_dialer, :mongodb_password),
           seeds: Application.get_env(:justice_dialer, :mongodb_seeds),
           port: Application.get_env(:justice_dialer, :mongodb_port)
-        )
+        ]
       ]),
-      worker(JusticeDialer.TwoFactor, [])
+      worker(JusticeDialer.TwoFactor, []),
+      worker(JusticeDialer.LoginConfig, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

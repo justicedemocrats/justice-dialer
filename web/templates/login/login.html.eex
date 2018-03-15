@@ -10,30 +10,45 @@
     <legend> Claim your login to the Justice Dialer </legend>
     <%= form_tag("/login", method: :post) %>
         <input type="hidden" name="_csrf_token" value="<%= csrf_token() %>" />
+
         <div class="input-field">
           <label>Name</label>
           <input class="text" type="text" name="name" required="required"/>
         </div>
+
         <div class="input-field">
           <label>Email</label>
           <input class="text" type="email" name="email" required="required"/>
         </div>
+
         <div class="input-field">
           <label>Phone</label>
           <input class="text" type="tel" name="phone" maxlength="10" required="required" />
         </div>
         <br/>
+
+        <div class="input-field">
+          <label>Are you with a Justice Democrats local chapter?</label>
+          <select name="client">
+            <option value="jd" selected="selected"> None </option>
+            <%= for group <- @groups do %>
+              <option value="<%= group["client"] %>"> <%= group["display_name"] %> </option>
+            <% end %>
+          </select>
+        </div>
+        <br/>
+
         <div class="input-field">
           <label>Where are you calling from?</label>
-          <br/>
-          <label> <input name="calling_from" type="radio" value="home" required="true" /> Home</label>
-          <br/>
-          <label> <input name="calling_from" type="radio" value="vol-pb" /> Volunteer-hosted phone bank</label>
-          <br/>
-          <label> <input name="calling_from" type="radio" value="campaign-office" /> Campaign office</label>
-          <br/>
-          <label> <input name="calling_from" type="radio" value="campaign-pb" /> Campaign-hosted phone bank</label>
+          <select name="calling_from">
+            <option value="home"> Home </option>
+            <option value="vol-pb"> Volunteer-hosted phone bank </option>
+            <option value="campaign-office"> Campaign office </option>
+            <option value="campaign-pb"> Campaign-hosted phone bank </option>
+          </select>
         </div>
+        <br/>
+
         <div class="input-field">
           <label> We'll need to verify your phone in order to get you in the dialer. Should we text you, or call you? </label>
           <br/>
