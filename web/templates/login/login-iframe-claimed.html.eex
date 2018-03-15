@@ -8,7 +8,7 @@
       Username: <%= @username %><br/>
       Password: <%= @password %><br/>
     </p>
-    <iframe src="<%= @post_sign_url %>" style="border:none; width: 100%; height: 100%;" />
+    <iframe src="<%= @post_sign_url %>" style="border:none; width: 100%; height: 75%;" />
   <% end %>
   <%= if @client == "beto" and not @use_post_sign do %>
     <link id="style-css" rel="stylesheet" href="https://betofortexas.com/wp-content/themes/wp-bft-flst/css/style.min.css?ver=1512705899" type="text/css" media="all">
