@@ -34,13 +34,16 @@
         <br/>
         <label> <input name="calling_from" type="radio" value="campaign-pb" /> Campaign-hosted phone bank</label>
       </div>
-      <div class="input-field">
-        <label> We'll need to verify your phone in order to get you in the dialer. Should we text you, or call you? </label>
-        <br/>
-        <label> <input name="verification_method" type="radio" value="text" required="true" /> Text me, I'm using a cell phone </label>
-        <br/>
-        <label> <input name="verification_method" type="radio" value="call" /> Call me, I'm using a landline </label>
-      </div>
+
+      <%= if @use_two_factor do %>
+        <div class="input-field">
+          <label> We'll need to verify your phone in order to get you in the dialer. Should we text you, or call you? </label>
+          <br/>
+          <label> <input name="verification_method" type="radio" value="text" required="true" /> Text me, I'm using a cell phone </label>
+          <br/>
+          <label> <input name="verification_method" type="radio" value="call" /> Call me, I'm using a landline </label>
+        </div>
+      <% end %>
       <div class="input-field">
         <input class="button" type="submit" value="Get Your Login">
       </div>

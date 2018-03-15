@@ -18,7 +18,10 @@ config :logger, :console,
   metadata: [:request_id]
 
 # Quantum config
-config :justice_dialer, JusticeDialer.Scheduler, jobs: []
+config :justice_dialer, JusticeDialer.Scheduler,
+  jobs: [
+    {"*/7 * * * *", {JusticeDialer.LoginConfig, :update, []}}
+  ]
 
 config :justice_dialer, ak_agent_report_page: 869
 

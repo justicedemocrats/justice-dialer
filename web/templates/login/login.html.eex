@@ -27,6 +27,7 @@
         </div>
         <br/>
 
+        <!--
         <div class="input-field">
           <label>Are you with a Justice Democrats local chapter?</label>
           <select name="client">
@@ -37,6 +38,7 @@
           </select>
         </div>
         <br/>
+        -->
 
         <div class="input-field">
           <label>Where are you calling from?</label>

@@ -58,6 +58,7 @@ defmodule JusticeDialer.LoginController do
       "login-iframe.html",
       client: client,
       layout: {JusticeDialer.LayoutView, "empty.html"},
+      use_two_factor: use_two_factor?(client),
       use_post_sign: Map.has_key?(params, "post_sign"),
       post_sign_url: Map.get(params, "post_sign")
     )
@@ -133,25 +134,42 @@ defmodule JusticeDialer.LoginController do
   end
 
   def post_iframe(conn, params = ~m(email phone name client)) do
-    TwoFactor.send_code(phone, Map.get(params, "verification_method", "text"))
+    use_two_factor = use_two_factor?(client)
     use_post_sign = Map.has_key?(params, "post_sign")
     post_sign_url = Map.get(params, "post_sign")
 
-    conn
-    |> put_resp_cookie("email", email)
-    |> put_resp_cookie("phone", phone)
-    |> put_resp_cookie("name", name)
-    |> put_resp_cookie("client", client)
-    |> put_resp_cookie("calling_from", params["calling_from"])
-    |> delete_resp_header("x-frame-options")
-    |> render(
-      "two-factor-iframe.html",
-      phone: phone,
-      client: client,
-      layout: {JusticeDialer.LayoutView, "empty.html"},
-      use_post_sign: use_post_sign,
-      post_sign_url: post_sign_url
-    )
+    if use_two_factor do
+      TwoFactor.send_code(phone, Map.get(params, "verification_method", "text"))
+
+      conn
+      |> put_resp_cookie("email", email)
+      |> put_resp_cookie("phone", phone)
+      |> put_resp_cookie("name", name)
+      |> put_resp_cookie("client", client)
+      |> put_resp_cookie("calling_from", params["calling_from"])
+      |> delete_resp_header("x-frame-options")
+      |> render(
+        "two-factor-iframe.html",
+        phone: phone,
+        client: client,
+        layout: {JusticeDialer.LayoutView, "empty.html"},
+        use_post_sign: use_post_sign,
+        post_sign_url: post_sign_url
+      )
+    else
+      ~m(username password) = claim_login(~m(email phone name), client)
+      layout = {JusticeDialer.LayoutView, "empty.html"}
+
+      conn
+      |> delete_resp_header("x-frame-options")
+      |> render(
+        "login-iframe-claimed.html",
+        Enum.into(
+          ~m(username password layout post_sign_url use_post_sign client)a |> IO.inspect(),
+          []
+        )
+      )
+    end
   end
 
   def post_two_factor(conn, params = ~m(code)) do
@@ -259,5 +277,12 @@ defmodule JusticeDialer.LoginController do
     conn
     |> put_resp_content_type("application/xml")
     |> send_resp(200, twiml)
+  end
+
+  def use_two_factor?(client) do
+    JusticeDialer.LoginConfig.get_all()
+    |> Enum.filter(&(&1["client"] == client))
+    |> List.first()
+    |> Map.get("use_two_factor")
   end
 end
