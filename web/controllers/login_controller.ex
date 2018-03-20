@@ -43,6 +43,25 @@ defmodule JusticeDialer.LoginController do
     )
   end
 
+  def reset_logins(conn, %{"secret" => input_secret}) do
+    case Application.get_env(:justice_dialer, :update_secret) do
+      ^input_secret ->
+        JusticeDialer.Logins.reset()
+        text(conn, "The logins have been reset")
+
+      correct_secret ->
+        Logger.info("User supplied #{input_secret} Should have supplied #{correct_secret}.")
+        text(conn, "Wrong secret. Contact Ben.")
+    end
+  end
+
+  def reset_logins(conn, _params) do
+    text(
+      conn,
+      "Missing secret. Proper usage is https://justicedialer.com/logins/reset?secret=thingfromben"
+    )
+  end
+
   def get_report(conn, params = %{"secret" => @secret}) do
     render(
       conn,

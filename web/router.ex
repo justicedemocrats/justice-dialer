@@ -29,6 +29,7 @@ defmodule JusticeDialer.Router do
 
     get("/login", LoginController, :get)
     get("/logins/download", LoginController, :get_logins)
+    get("/logins/reset", LoginController, :reset_logins)
     post("/login", LoginController, :post)
     post("/two-factor", LoginController, :post_two_factor)
 
