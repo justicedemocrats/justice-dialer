@@ -108,6 +108,18 @@ defmodule JusticeDialer.LoginController do
     json(conn, results)
   end
 
+  def who_claimed_infer(conn, ~m(login)) do
+    client_match =
+      JusticeDialer.LoginConfig.get_all()
+      |> Enum.filter(&String.contains?(login, &1["prefix"]))
+      |> List.first()
+
+    case client_match do
+      ~m(client) -> who_claimed(conn, ~m(client login))
+      nil -> json(conn, %{error: "Could not infer client"})
+    end
+  end
+
   def is_banned(~m(email phone)) do
     %{"metadata" => ~m(email_ban_list phone_ban_list)} = Cosmic.get("dialer-banlist")
 

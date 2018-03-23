@@ -50,6 +50,7 @@ defmodule JusticeDialer.Router do
   scope "/api", JusticeDialer do
     pipe_through(:api)
 
+    get("/call/who-claimed/infer-client/:login", LoginController, :who_claimed_infer)
     get("/call/who-claimed/:client/:login", LoginController, :who_claimed)
     post("/call/who-claimed-many/:client", LoginController, :who_claimed_many)
 

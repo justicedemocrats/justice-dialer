@@ -54,7 +54,7 @@ defmodule JusticeDialer.Mixfile do
       {:timex, "~> 3.0"},
       {:quantum, "~> 2.0.0"},
       {:html_sanitize_ex, "~> 1.3.0-rc3"},
-      {:distillery, "~> 1.0.0"},
+      {:distillery, "~> 1.5", runtime: false},
       {:number, "~> 0.5.2"},
       {:poison, "~> 3.0", override: true},
       {:cosmic, git: "https://github.com/justicedemocrats/cosmic_ex.git"},
