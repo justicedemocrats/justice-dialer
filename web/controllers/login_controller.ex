@@ -111,7 +111,12 @@ defmodule JusticeDialer.LoginController do
   def who_claimed_infer(conn, ~m(login)) do
     client_match =
       JusticeDialer.LoginConfig.get_all()
-      |> Enum.filter(&String.contains?(login, &1["prefix"]))
+      |> Enum.filter(
+        &String.contains?(
+          String.downcase(login),
+          String.downcase(&1["prefix"])
+        )
+      )
       |> List.first()
 
     case client_match do
