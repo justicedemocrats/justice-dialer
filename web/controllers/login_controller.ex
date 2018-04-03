@@ -193,17 +193,14 @@ defmodule JusticeDialer.LoginController do
         post_sign_url: post_sign_url
       )
     else
-      ~m(username password) = claim_login(~m(email phone name), client)
+      ~m(username password) = claim_login(params, client)
       layout = {JusticeDialer.LayoutView, "empty.html"}
 
       conn
       |> delete_resp_header("x-frame-options")
       |> render(
         "login-iframe-claimed.html",
-        Enum.into(
-          ~m(username password layout post_sign_url use_post_sign client)a |> IO.inspect(),
-          []
-        )
+        Enum.into(~m(username password layout post_sign_url use_post_sign client)a, [])
       )
     end
   end
@@ -243,10 +240,7 @@ defmodule JusticeDialer.LoginController do
       |> delete_resp_header("x-frame-options")
       |> render(
         "login-iframe-claimed.html",
-        Enum.into(
-          ~m(username password layout post_sign_url use_post_sign client)a |> IO.inspect(),
-          []
-        )
+        Enum.into(~m(username password layout post_sign_url use_post_sign client)a, [])
       )
     else
       conn
@@ -308,7 +302,6 @@ defmodule JusticeDialer.LoginController do
       "Your dialer verification code is #{code}. Once again, that is #{code}. Thank you for making calls."
 
     twiml = JusticeDialer.Twiml.say_message(message)
-    IO.puts(twiml)
 
     conn
     |> put_resp_content_type("application/xml")
