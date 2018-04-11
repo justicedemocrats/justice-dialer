@@ -19,8 +19,10 @@ config :logger, :console,
 
 # Quantum config
 config :justice_dialer, JusticeDialer.Scheduler,
+  timezone: "America/New_York",
   jobs: [
-    {"*/7 * * * *", {JusticeDialer.LoginConfig, :update, []}}
+    {"*/7 * * * *", {JusticeDialer.LoginConfig, :update, []}},
+    {"0 5 * * *", {JusticeDialer.Logins, :reset, []}}
   ]
 
 config :justice_dialer, ak_agent_report_page: 869

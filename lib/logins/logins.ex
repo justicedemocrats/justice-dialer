@@ -27,6 +27,10 @@ defmodule JusticeDialer.Logins do
       Db.reset_claimed(client)
       Logger.info("[dialer-update] reset claimed for #{client}")
     end)
+
+    Logger.info("Reloading all logins")
+    update_livevox()
+    Logger.info("Updated logins in livevox")
   end
 
   def next_login(client) do
@@ -61,13 +65,13 @@ defmodule JusticeDialer.Logins do
     1..count
     |> Enum.map(fn n ->
       %{
-        username: "#{first_name}#{n}",
-        password: random_password(),
-        first_name: first_name,
-        last_name: "Vol#{n}",
-        wrap_up_time: wrap_up_time,
-        index: n,
-        client: client
+        "username" => "#{first_name}#{n}",
+        "password" => random_password(),
+        "first_name" => first_name,
+        "last_name" => "Vol#{n}",
+        "wrap_up_time" => wrap_up_time,
+        "index" => n,
+        "client" => client
       }
     end)
   end
@@ -109,6 +113,33 @@ defmodule JusticeDialer.Logins do
         )
       end)
     end)
+  end
+
+  def update_livevox do
+    JusticeDialer.LoginConfig.get_all()
+    |> Stream.each(&load_pool_into_livevox/1)
+    |> Stream.run()
+  end
+
+  def load_pool_into_livevox(pool = ~m(client)) do
+    services = services_for(pool)
+
+    Db.logins_for_client(client)
+    |> Stream.each(&load_login_into_livevox(&1, services))
+    |> Stream.run()
+  end
+
+  def load_login_into_livevox(login, services) do
+    ~m(username first_name last_name password wrap_up_time) = login
+    loginId = username
+    firstName = first_name
+    lastName = last_name
+    wrapUpTime = wrap_up_time
+    phone = "1234"
+
+    Livevox.Username.update_or_create(
+      ~m(loginId firstName lastName password phone wrapUpTime services)
+    )
   end
 
   def services_for(%{"service_group" => client}) when not is_nil(client) do

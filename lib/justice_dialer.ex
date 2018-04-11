@@ -19,6 +19,7 @@ defmodule JusticeDialer do
       worker(Ak.List, []),
       worker(Ak.Signup, []),
       worker(Ak.Petition, []),
+      worker(Livevox.Session, []),
       worker(Mongo, [
         [
           name: :mongo,
