@@ -62,11 +62,11 @@ config :justice_dialer,
   airtable_key: "${AIRTABLE_KEY}",
   airtable_base: "${AIRTABLE_BASE}"
 
-config :livevox,
-  access_token: "${LIVEVOX_ACCESS_TOKEN}",
-  clientname: "${LIVEVOX_CLIENT_NAME}",
-  username: "${LIVEVOX_USERNAME}",
-  password: "${LIVEVOX_PASSWORD}"
+config :justice_dialer,
+  livevox_access_token: "${LIVEVOX_ACCESS_TOKEN}",
+  livevox_clientname: "${LIVEVOX_CLIENT_NAME}",
+  livevox_username: "${LIVEVOX_USERNAME}",
+  livevox_password: "${LIVEVOX_PASSWORD}"
 
 config :rollbax,
   access_token: "${ROLLBAR_ACCESS_TOKEN}",

@@ -46,11 +46,11 @@ config :justice_dialer,
   airtable_key: System.get_env("AIRTABLE_KEY"),
   airtable_base: System.get_env("AIRTABLE_BASE")
 
-config :livevox,
-  access_token: System.get_env("LIVEVOX_ACCESS_TOKEN"),
-  clientname: System.get_env("LIVEVOX_CLIENT_NAME"),
-  username: System.get_env("LIVEVOX_USERNAME"),
-  password: System.get_env("LIVEVOX_PASSWORD")
+config :justice_dialer,
+  livevox_access_token: System.get_env("LIVEVOX_ACCESS_TOKEN"),
+  livevox_clientname: System.get_env("LIVEVOX_CLIENT_NAME"),
+  livevox_username: System.get_env("LIVEVOX_USERNAME"),
+  livevox_password: System.get_env("LIVEVOX_PASSWORD")
 
 config :rollbax,
   access_token: System.get_env("ROLLBAR_ACCESS_TOKEN"),
