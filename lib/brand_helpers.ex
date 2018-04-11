@@ -20,7 +20,7 @@ defmodule JusticeDialer.BrandHelpers do
   def abbr("jd"), do: "JD"
 
   def address("bnc"), do: "P. O. BOX 621264 CHARLOTTE, NC 28262"
-  def address("jd"), do: "P. O. BOX 621264 CHARLOTTE, NC 28262"
+  def address("jd"), do: "P. O. Box 910 Knoxville, TN 37901."
 
   def homepage("bnc"), do: "https://brandnewcongress.org"
   def homepage("jd"), do: "https://justicedemocrats.com"
