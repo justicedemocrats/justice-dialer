@@ -129,7 +129,7 @@ defmodule JusticeDialer.Logins do
     Db.logins_for_client(client)
     |> Stream.with_index()
     |> Stream.map(&report/1)
-    |> Flow.from_enumerable(min_demand: 1, max_demand: 5)
+    |> Flow.from_enumerable(min_demand: 1, max_demand: 2)
     |> Flow.each(&load_login_into_livevox(&1, services))
     |> Flow.run()
 
