@@ -122,11 +122,26 @@ defmodule JusticeDialer.Logins do
   end
 
   def load_pool_into_livevox(pool = ~m(client)) do
+    Logger.info("Loading #{client}")
+
     services = services_for(pool)
 
     Db.logins_for_client(client)
-    |> Stream.each(&load_login_into_livevox(&1, services))
-    |> Stream.run()
+    |> Stream.with_index()
+    |> Stream.map(&report/1)
+    |> Flow.from_enumerable(min_demand: 1, max_demand: 5)
+    |> Flow.each(&load_login_into_livevox(&1, services))
+    |> Flow.run()
+
+    Logger.info("Loaded #{client}")
+  end
+
+  def report({l, idx}) do
+    if rem(idx, 100) == 0 do
+      Logger.info("Did #{idx}")
+    end
+
+    l
   end
 
   def load_login_into_livevox(login, services) do

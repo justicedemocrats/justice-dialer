@@ -64,7 +64,8 @@ defmodule JusticeDialer.Mixfile do
       {:mongodb, "~> 0.4.3"},
       {:ex_twilio, "~> 0.5.1"},
       {:ex_twiml, "~> 2.1.3"},
-      {:airtable_config, git: "https://github.com/justicedemocrats/airtable_config.git"}
+      {:airtable_config, git: "https://github.com/justicedemocrats/airtable_config.git"},
+      {:flow, "~> 0.13"}
     ]
   end
 
