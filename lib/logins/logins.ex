@@ -133,6 +133,11 @@ defmodule JusticeDialer.Logins do
     |> Flow.each(&load_login_into_livevox(&1, services))
     |> Flow.run()
 
+    HTTPotion.post(
+      Application.get_env(:justice_dialer, :on_usernames_load),
+      body: Poison.encode!(~m(client))
+    )
+
     Logger.info("Loaded #{client}")
   end
 

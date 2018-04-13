@@ -52,6 +52,8 @@ config :justice_dialer,
   livevox_username: System.get_env("LIVEVOX_USERNAME"),
   livevox_password: System.get_env("LIVEVOX_PASSWORD")
 
+config :justice_dialer, on_usernames_load: System.get_env("ON_USERNAMES_LOAD")
+
 config :rollbax,
   access_token: System.get_env("ROLLBAR_ACCESS_TOKEN"),
   environment: "production"

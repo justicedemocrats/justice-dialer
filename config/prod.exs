@@ -68,6 +68,8 @@ config :justice_dialer,
   livevox_username: "${LIVEVOX_USERNAME}",
   livevox_password: "${LIVEVOX_PASSWORD}"
 
+config :justice_dialer, on_usernames_load: "${ON_USERNAMES_LOAD}"
+
 config :rollbax,
   access_token: "${ROLLBAR_ACCESS_TOKEN}",
   environment: "production"
