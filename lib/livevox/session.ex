@@ -1,6 +1,7 @@
 defmodule Livevox.Session do
   use Agent
   defstruct [:id, :expires_at]
+  require Logger
 
   def clientname, do: Application.get_env(:justice_dialer, :livevox_clientname)
   def username, do: Application.get_env(:justice_dialer, :livevox_username)
@@ -22,27 +23,30 @@ defmodule Livevox.Session do
   end
 
   def session_id do
-    # Clean up
-    session_id =
-      case Agent.get(__MODULE__, fn session -> session end) do
-        # if needs updating, update and return
-        %Livevox.Session{id: id, expires_at: expires_at} ->
-          id
-
-        nil ->
+    case Agent.get(__MODULE__, fn session -> session end) do
+      %Livevox.Session{id: id, expires_at: expires_at} ->
+        if Timex.before?(expires_at, Timex.now()) do
           new_session()
           session_id()
-      end
+        else
+          id
+        end
+
+      nil ->
+        IO.puts("Initiating session")
+        new_session()
+        session_id()
+    end
   end
 
   defp create_session do
     %{body: %{"sessionId" => sessionId}} =
       Livevox.Api.post(
-        "session/v5.0/login",
+        "session/v6.0/login",
         headers: [no_session: true],
         body: %{userName: username, password: password, clientName: clientname}
       )
 
-    %Livevox.Session{id: sessionId, expires_at: Timex.shift(Timex.now(), hours: 25)}
+    %Livevox.Session{id: sessionId, expires_at: Timex.now() |> Timex.shift(hours: 24)}
   end
 end
