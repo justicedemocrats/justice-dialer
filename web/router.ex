@@ -57,6 +57,9 @@ defmodule JusticeDialer.Router do
     get("/update/cosmic", UpdateController, :cosmic)
     post("/update/cosmic", UpdateController, :cosmic)
 
+    get("/login/:client", LoginController, :api_login)
+    post("/login/:client", LoginController, :api_two_factor)
+
     post("/callback", LoginController, :callback)
   end
 

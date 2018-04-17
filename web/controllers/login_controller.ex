@@ -70,19 +70,6 @@ defmodule JusticeDialer.LoginController do
     )
   end
 
-  def get_iframe(conn, params = %{"client" => client}) do
-    conn
-    |> delete_resp_header("x-frame-options")
-    |> render(
-      "login-iframe.html",
-      client: client,
-      layout: {JusticeDialer.LayoutView, "empty.html"},
-      use_two_factor: use_two_factor?(client),
-      use_post_sign: Map.has_key?(params, "post_sign"),
-      post_sign_url: Map.get(params, "post_sign")
-    )
-  end
-
   def who_claimed(conn, _params = ~m(client login)) do
     result =
       case Ak.DialerLogin.who_claimed(client, login) do
@@ -313,5 +300,71 @@ defmodule JusticeDialer.LoginController do
     |> Enum.filter(&(&1["client"] == client))
     |> List.first()
     |> Map.get("use_two_factor")
+  end
+
+  def api_login(conn, params = ~m(email phone name client)) do
+    use_two_factor = use_two_factor?(client)
+    use_post_sign = Map.has_key?(params, "post_sign")
+    post_sign_url = Map.get(params, "post_sign")
+
+    if use_two_factor do
+      TwoFactor.send_code(phone, Map.get(params, "verification_method", "text"))
+
+      conn
+      |> put_resp_cookie("email", email)
+      |> put_resp_cookie("phone", phone)
+      |> put_resp_cookie("name", name)
+      |> put_resp_cookie("client", client)
+      |> put_resp_cookie("calling_from", params["calling_from"])
+      |> delete_resp_header("x-frame-options")
+      |> render(
+        "two-factor-iframe.html",
+        phone: phone,
+        client: client,
+        layout: {JusticeDialer.LayoutView, "empty.html"},
+        use_post_sign: use_post_sign,
+        post_sign_url: post_sign_url
+      )
+    else
+      ~m(username password) = claim_login(params, client)
+      layout = {JusticeDialer.LayoutView, "empty.html"}
+
+      conn
+      |> delete_resp_header("x-frame-options")
+      |> render(
+        "login-iframe-claimed.html",
+        Enum.into(~m(username password layout post_sign_url use_post_sign client)a, [])
+      )
+    end
+  end
+
+  def api_two_factor(conn, params = ~m(code client)) do
+    phone = conn.cookies["phone"]
+    use_post_sign = Map.has_key?(params, "post_sign")
+    post_sign_url = Map.get(params, "post_sign")
+
+    if TwoFactor.is_correct_code?(phone, code) do
+      ~m(username password) = claim_login(conn.cookies, client)
+      layout = {JusticeDialer.LayoutView, "empty.html"}
+
+      conn
+      |> delete_resp_header("x-frame-options")
+      |> render(
+        "login-iframe-claimed.html",
+        Enum.into(~m(username password layout post_sign_url use_post_sign client)a, [])
+      )
+    else
+      conn
+      |> delete_resp_header("x-frame-options")
+      |> render(
+        "two-factor-iframe.html",
+        phone: phone,
+        error: "Incorrect code.",
+        client: client,
+        use_post_sign: use_post_sign,
+        post_sign_url: post_sign_url,
+        layout: {JusticeDialer.LayoutView, "empty.html"}
+      )
+    end
   end
 end

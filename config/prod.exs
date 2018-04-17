@@ -69,6 +69,7 @@ config :justice_dialer,
   livevox_password: "${LIVEVOX_PASSWORD}"
 
 config :justice_dialer, on_usernames_load: "${ON_USERNAMES_LOAD}"
+config :justice_dialer, token_secret: "${TOKEN_SECRET}"
 
 config :rollbax,
   access_token: "${ROLLBAR_ACCESS_TOKEN}",
