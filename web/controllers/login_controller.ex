@@ -3,6 +3,7 @@ defmodule JusticeDialer.LoginController do
   import ShortMaps
   require Logger
   alias JusticeDialer.TwoFactor
+  alias JusticeDialer.TwoFactorToken
 
   def get(conn, params) do
     groups =
@@ -304,67 +305,33 @@ defmodule JusticeDialer.LoginController do
 
   def api_login(conn, params = ~m(email phone name client)) do
     use_two_factor = use_two_factor?(client)
-    use_post_sign = Map.has_key?(params, "post_sign")
-    post_sign_url = Map.get(params, "post_sign")
 
     if use_two_factor do
-      TwoFactor.send_code(phone, Map.get(params, "verification_method", "text"))
+      case TwoFactorToken.step_one(params) do
+        {:ok, identifier} ->
+          json(conn, ~m(identifier))
 
-      conn
-      |> put_resp_cookie("email", email)
-      |> put_resp_cookie("phone", phone)
-      |> put_resp_cookie("name", name)
-      |> put_resp_cookie("client", client)
-      |> put_resp_cookie("calling_from", params["calling_from"])
-      |> delete_resp_header("x-frame-options")
-      |> render(
-        "two-factor-iframe.html",
-        phone: phone,
-        client: client,
-        layout: {JusticeDialer.LayoutView, "empty.html"},
-        use_post_sign: use_post_sign,
-        post_sign_url: post_sign_url
-      )
+        {:error, error} ->
+          conn
+          |> put_status(400)
+          |> json(~m(error))
+      end
     else
       ~m(username password) = claim_login(params, client)
-      layout = {JusticeDialer.LayoutView, "empty.html"}
-
-      conn
-      |> delete_resp_header("x-frame-options")
-      |> render(
-        "login-iframe-claimed.html",
-        Enum.into(~m(username password layout post_sign_url use_post_sign client)a, [])
-      )
+      json(conn, ~m(username password))
     end
   end
 
-  def api_two_factor(conn, params = ~m(code client)) do
-    phone = conn.cookies["phone"]
-    use_post_sign = Map.has_key?(params, "post_sign")
-    post_sign_url = Map.get(params, "post_sign")
+  def api_two_factor(conn, params = ~m(code identifier client)) do
+    case TwoFactorToken.step_two(~m(code identifier)) do
+      {:ok, payload} ->
+        ~m(username password) = claim_login(payload, client)
+        json(conn, ~m(username password))
 
-    if TwoFactor.is_correct_code?(phone, code) do
-      ~m(username password) = claim_login(conn.cookies, client)
-      layout = {JusticeDialer.LayoutView, "empty.html"}
-
-      conn
-      |> delete_resp_header("x-frame-options")
-      |> render(
-        "login-iframe-claimed.html",
-        Enum.into(~m(username password layout post_sign_url use_post_sign client)a, [])
-      )
-    else
-      conn
-      |> delete_resp_header("x-frame-options")
-      |> render(
-        "two-factor-iframe.html",
-        phone: phone,
-        error: "Incorrect code.",
-        client: client,
-        use_post_sign: use_post_sign,
-        post_sign_url: post_sign_url,
-        layout: {JusticeDialer.LayoutView, "empty.html"}
-      )
+      {:error, error} ->
+        conn
+        |> put_status(400)
+        |> json(~m(error))
     end
   end
 end

@@ -31,6 +31,7 @@ defmodule JusticeDialer do
         ]
       ]),
       worker(JusticeDialer.TwoFactor, []),
+      worker(JusticeDialer.TwoFactorToken, []),
       worker(JusticeDialer.LoginConfig, [])
     ]
 

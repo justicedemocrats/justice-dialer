@@ -20,13 +20,13 @@ defmodule JusticeDialer.TwoFactor do
     case call do
       {:ok, call} ->
         record_normalized_code_pair(call.to, code)
-        {:ok, :code_sent}
+        {:ok, code}
 
       {:error, _error, 400} ->
-        {:error, :invalid_phone}
+        {:error, "Invalid_phone"}
 
       {:error, _error, _erro_code} ->
-        {:error, :system_error}
+        {:error, "System error"}
     end
   end
 
@@ -41,9 +41,9 @@ defmodule JusticeDialer.TwoFactor do
       })
 
     case msg do
-      {:ok, resp} -> {:ok, :code_sent}
-      {:error, _error, 400} -> {:error, :invalid_phone}
-      {:error, _error, _erro_code} -> {:error, :system_error}
+      {:ok, resp} -> {:ok, code}
+      {:error, _error, 400} -> {:error, "Invalid phone"}
+      {:error, _error, _erro_code} -> {:error, "System_error"}
     end
   end
 
