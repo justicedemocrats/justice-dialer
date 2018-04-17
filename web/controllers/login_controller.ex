@@ -157,6 +157,19 @@ defmodule JusticeDialer.LoginController do
     |> render("two-factor.html", [phone: phone] ++ GlobalOpts.get(conn, params))
   end
 
+  def get_iframe(conn, params = %{"client" => client}) do
+    conn
+    |> delete_resp_header("x-frame-options")
+    |> render(
+      "login-iframe.html",
+      client: client,
+      layout: {JusticeDialer.LayoutView, "empty.html"},
+      use_two_factor: use_two_factor?(client),
+      use_post_sign: Map.has_key?(params, "post_sign"),
+      post_sign_url: Map.get(params, "post_sign")
+    )
+  end
+
   def post_iframe(conn, params = ~m(email phone name client)) do
     use_two_factor = use_two_factor?(client)
     use_post_sign = Map.has_key?(params, "post_sign")
