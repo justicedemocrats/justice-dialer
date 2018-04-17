@@ -121,7 +121,13 @@ defmodule JusticeDialer.Logins do
     |> Stream.run()
   end
 
-  def load_pool_into_livevox(pool = ~m(client)) do
+  def update_services do
+    JusticeDialer.LoginConfig.get_all()
+    |> Stream.each(&load_pool_into_livevox(&1, true))
+    |> Stream.run()
+  end
+
+  def load_pool_into_livevox(pool = ~m(client), only_update_services \\ false) do
     Logger.info("Loading #{client}")
 
     services = services_for(pool)
@@ -130,12 +136,12 @@ defmodule JusticeDialer.Logins do
     |> Stream.with_index()
     |> Stream.map(&report/1)
     |> Flow.from_enumerable(min_demand: 1, max_demand: 2)
-    |> Flow.each(&load_login_into_livevox(&1, services))
+    |> Flow.each(&load_login_into_livevox(&1, services, only_update_services))
     |> Flow.run()
 
     HTTPotion.post(
       Application.get_env(:justice_dialer, :on_usernames_load),
-      body: Poison.encode!(~m(client))
+      body: Poison.encode!(~m(client only_update_services))
     )
 
     Logger.info("Loaded #{client}")
@@ -149,7 +155,7 @@ defmodule JusticeDialer.Logins do
     l
   end
 
-  def load_login_into_livevox(login, services) do
+  def load_login_into_livevox(login, services, only_update_services) do
     ~m(username first_name last_name password wrap_up_time) = login
     loginId = username
     firstName = first_name
@@ -157,9 +163,13 @@ defmodule JusticeDialer.Logins do
     wrapUpTime = wrap_up_time
     phone = "1234"
 
-    Livevox.Username.update_or_create(
-      ~m(loginId firstName lastName password phone wrapUpTime services)
-    )
+    body = ~m(loginId firstName lastName password phone wrapUpTime services)
+
+    if only_update_services do
+      Livevox.Username.update_services(body)
+    else
+      Livevox.Username.update_or_create(body)
+    end
   end
 
   def services_for(%{"service_group" => client}) when not is_nil(client) do

@@ -22,7 +22,11 @@ config :justice_dialer, JusticeDialer.Scheduler,
   timezone: "America/New_York",
   jobs: [
     {"*/7 * * * *", {JusticeDialer.LoginConfig, :update, []}},
-    {"0 5 * * *", {JusticeDialer.Logins, :reset, []}}
+    {"0 5 * * *", {JusticeDialer.Logins, :reset, []}},
+    {"1 21 * * *", {JusticeDialer.Logins, :update_services, []}},
+    {"1 22 * * *", {JusticeDialer.Logins, :update_services, []}},
+    {"1 23 * * *", {JusticeDialer.Logins, :update_services, []}},
+    {"1 24 * * *", {JusticeDialer.Logins, :update_services, []}}
   ]
 
 config :justice_dialer, ak_agent_report_page: 869

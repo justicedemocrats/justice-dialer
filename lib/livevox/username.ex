@@ -34,7 +34,20 @@ defmodule Livevox.Username do
       })
 
     Livevox.Api.put("configuration/v6.0/agents/#{id}", body: body)
+    update_services(id, services)
+  end
 
+  def update_services(params = ~m(loginId firstName lastName password phone wrapUpTime services)) do
+    %{body: ~m(agent)} = Livevox.Username.find(~m(loginId))
+
+    ~m(id) =
+      Enum.filter(agent, &(String.upcase(&1["loginId"]) == String.upcase(loginId)))
+      |> List.first()
+
+    update_services(id, services)
+  end
+
+  def update_services(id, services) do
     %{body: ~m(assignedService)} = Livevox.Api.get("configuration/v6.0/agents/#{id}")
     existing_service_ids = Enum.map(assignedService, &"#{&1["id"]}") |> MapSet.new()
     services_set = MapSet.new(services)
