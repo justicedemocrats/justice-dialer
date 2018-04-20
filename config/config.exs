@@ -9,7 +9,7 @@ use Mix.Config
 config :justice_dialer, JusticeDialer.Endpoint,
   url: [host: 'localhost'],
   secret_key_base: "GxtfaDIKOkay5x2k0cxuJYQPX4BEyeo9fHynynmVqtiJoDgZqM8gvXT8dSMXekhI",
-  render_errors: [view: JusticeDialer.ErrorView, accepts: ~w(html json)],
+  render_errors: [view: JusticeDialer.PageView, accepts: ~w(html json)],
   pubsub: [name: JusticeDialer.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
