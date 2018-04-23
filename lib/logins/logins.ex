@@ -42,7 +42,7 @@ defmodule JusticeDialer.Logins do
 
   def phony("jd") do
     %{
-      "username" => "JdVol#{Kernel.trunc(:rand.uniform() * 999)}",
+      "username" => "JdDialerVol#{Kernel.trunc(:rand.uniform() * 999)}",
       "password" => random_password()
     }
   end
