@@ -25,7 +25,7 @@ defmodule AgentReports do
   end
 
   def send_report(action_body) do
-    IO.inspect(Ak.Signup.process_signup(&(&1["id"] == target_page()), action_body))
+    Ak.Signup.process_signup(&(&1["id"] == target_page()), action_body)
   end
 
   def call_count(caller_email) do

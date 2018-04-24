@@ -338,6 +338,7 @@ defmodule JusticeDialer.LoginController do
   def api_two_factor(conn, params = ~m(code identifier client)) do
     case TwoFactorToken.step_two(~m(code identifier)) do
       {:ok, payload} ->
+        IO.inspect(payload)
         ~m(username password) = claim_login(payload, client)
         json(conn, ~m(username password))
 

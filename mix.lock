@@ -1,5 +1,5 @@
 %{
-  "actionkit": {:git, "https://github.com/justicedemocrats/actionkit_ex.git", "90a76a4d6cbac4373d906a9d731e35e4d6147c42", []},
+  "actionkit": {:git, "https://github.com/justicedemocrats/actionkit_ex.git", "4727e2dd9a11b553131879d67da904b45645d84e", []},
   "airtable_config": {:git, "https://github.com/justicedemocrats/airtable_config.git", "8342a93956a515ddbe169a8163b1acc25962f9d2", []},
   "base64url": {:hex, :base64url, "0.0.1", "36a90125f5948e3afd7be97662a1504b934dd5dac78451ca6e9abf85a10286be", [:rebar], [], "hexpm"},
   "browser": {:hex, :browser, "0.1.5", "50670574b1fd78ac3ca44173aef0e3cbf4322e42627dcab351d40d5420f525c1", [:mix], [], "hexpm"},
