@@ -18,6 +18,7 @@ defmodule JusticeDialer.PageController do
 
     candidate =
       cond do
+        match?(%{"status" => "error"}, candidate) -> nil
         is_map(candidate) -> candidate
         is_nil(candidate) -> nil
         true -> Cosmic.get(candidate)
