@@ -134,7 +134,7 @@
 
               <div style="font-size: larger; margin-bottom: 12px;">
                 <a target="_blank" href="<%= csl %>">
-                  2) Read the calling script
+                  2) Preview the calling script
                 </a>
               </div>
 
