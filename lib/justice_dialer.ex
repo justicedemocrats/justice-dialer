@@ -32,7 +32,8 @@ defmodule JusticeDialer do
       ]),
       worker(JusticeDialer.TwoFactor, []),
       worker(JusticeDialer.TwoFactorToken, []),
-      worker(JusticeDialer.LoginConfig, [])
+      worker(JusticeDialer.LoginConfig, []),
+      worker(JusticeDialer.CampaignConfig, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

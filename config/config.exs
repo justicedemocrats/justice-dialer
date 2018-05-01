@@ -22,6 +22,7 @@ config :justice_dialer, JusticeDialer.Scheduler,
   timezone: "America/New_York",
   jobs: [
     {"*/7 * * * *", {JusticeDialer.LoginConfig, :update, []}},
+    {"*/7 * * * *", {JusticeDialer.CampaignConfig, :update, []}},
     {"0 5 * * *", {JusticeDialer.Logins, :reset, []}},
     {"1 21 * * *", {JusticeDialer.Logins, :update_services, []}},
     {"1 22 * * *", {JusticeDialer.Logins, :update_services, []}},
