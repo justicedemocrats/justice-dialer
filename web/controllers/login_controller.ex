@@ -149,12 +149,12 @@ defmodule JusticeDialer.LoginController do
     client = "jd"
     TwoFactor.send_code(phone, Map.get(params, "verification_method", "text"))
 
-    conn
-    |> put_resp_cookie("email", email)
-    |> put_resp_cookie("phone", phone)
-    |> put_resp_cookie("name", name)
-    |> put_resp_cookie("calling_from", params["calling_from"])
-    |> render("two-factor.html", [phone: phone] ++ GlobalOpts.get(conn, params))
+    render(
+      conn,
+      "two-factor.html",
+      [phone: phone, email: email, phone: phone, name: name, calling_from: params["calling_from"]] ++
+        GlobalOpts.get(conn, params)
+    )
   end
 
   def get_iframe(conn, params = %{"client" => client}) do
@@ -179,15 +179,13 @@ defmodule JusticeDialer.LoginController do
       TwoFactor.send_code(phone, Map.get(params, "verification_method", "text"))
 
       conn
-      |> put_resp_cookie("email", email)
-      |> put_resp_cookie("phone", phone)
-      |> put_resp_cookie("name", name)
-      |> put_resp_cookie("client", client)
-      |> put_resp_cookie("calling_from", params["calling_from"])
       |> delete_resp_header("x-frame-options")
       |> render(
         "two-factor-iframe.html",
         phone: phone,
+        email: email,
+        name: name,
+        calling_from: params["calling_from"],
         client: client,
         layout: {JusticeDialer.LayoutView, "empty.html"},
         use_post_sign: use_post_sign,
@@ -206,11 +204,9 @@ defmodule JusticeDialer.LoginController do
     end
   end
 
-  def post_two_factor(conn, params = ~m(code)) do
-    phone = conn.cookies["phone"]
-
+  def post_two_factor(conn, params = ~m(code phone email name calling_from)) do
     if TwoFactor.is_correct_code?(phone, code) do
-      ~m(username password) = claim_login(conn.cookies, "jd")
+      ~m(username password) = claim_login(params, "jd")
       title = "Call"
       %{"content" => call_page} = Cosmic.get("call-page")
 
@@ -223,18 +219,23 @@ defmodule JusticeDialer.LoginController do
       render(
         conn,
         "two-factor.html",
-        [phone: phone, error: "Incorrect code."] ++ GlobalOpts.get(conn, params)
+        [
+          phone: phone,
+          email: email,
+          name: name,
+          calling_from: calling_from,
+          error: "Incorrect code."
+        ] ++ GlobalOpts.get(conn, params)
       )
     end
   end
 
-  def post_two_factor_iframe(conn, params = ~m(code client)) do
-    phone = conn.cookies["phone"]
+  def post_two_factor_iframe(conn, params = ~m(code client phone name email calling_from)) do
     use_post_sign = Map.has_key?(params, "post_sign")
     post_sign_url = Map.get(params, "post_sign")
 
     if TwoFactor.is_correct_code?(phone, code) do
-      ~m(username password) = claim_login(conn.cookies, client)
+      ~m(username password) = claim_login(params, client)
       layout = {JusticeDialer.LayoutView, "empty.html"}
 
       conn
@@ -249,6 +250,9 @@ defmodule JusticeDialer.LoginController do
       |> render(
         "two-factor-iframe.html",
         phone: phone,
+        name: name,
+        email: email,
+        calling_from: calling_from,
         error: "Incorrect code.",
         client: client,
         use_post_sign: use_post_sign,

@@ -18,6 +18,10 @@
     <fieldset>
       <legend> Enter the code that was sent to <%= @phone %>.</legend>
       <input type="hidden" name="_csrf_token" value="<%= csrf_token() %>" />
+      <input type="hidden" name="phone" value="<%= @phone %>" />
+      <input type="hidden" name="email" value="<%= @email %>" />
+      <input type="hidden" name="name" value="<%= @name %>" />
+      <input type="hidden" name="calling_from" value="<%= @calling_from %>" />
       <%= if @use_post_sign do %>
         <input type="hidden" name="post_sign" value="<%= @post_sign_url %>">
       <% end %>
