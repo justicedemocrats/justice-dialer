@@ -19,6 +19,7 @@ defmodule JusticeDialer.LoginConfig do
     count = fields["Count"]
     client = fields["Iframe Slug"]
     is_group = fields["Is Group"] == true
+    is_campaign = fields["Is Campaign"] == true
     wrap_up = fields["Wrap Up Time"]
     use_two_factor = fields["Two-Factor Enabled"]
 
@@ -29,6 +30,7 @@ defmodule JusticeDialer.LoginConfig do
       end
 
     ~m(prefix custom_services service_group count
-       client is_group wrap_up display_name use_two_factor)
+       client is_group wrap_up display_name use_two_factor
+       is_campaign)
   end
 end

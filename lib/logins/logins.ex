@@ -105,7 +105,7 @@ defmodule JusticeDialer.Logins do
             wrap_up_time,
             1,
             0,
-            "Callers",
+            agent_team_for(pool),
             "",
             ""
           ],
@@ -204,4 +204,8 @@ defmodule JusticeDialer.Logins do
   def services_for(%{"custom_services" => services}) when is_list(services) do
     services
   end
+
+  def agent_team_for(%{"is_campaign" => true}), do: "Campaign"
+  def agent_team_for(%{"is_group" => true}), do: "Chapter"
+  def agent_team_for(_), do: "Callers"
 end
