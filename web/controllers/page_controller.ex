@@ -206,52 +206,54 @@ defmodule JusticeDialer.PageController do
     local_hours = now.hour
     day_of_week = Timex.weekday(now)
 
-    case JusticeDialer.CampaignConfig.is_open?(district) do
-      nil ->
-        [vulgar_open, vulgar_close] =
-          case metadata["open_time_monday_saturday"] do
-            time_range when is_binary(time_range) ->
-              time_range
-              |> String.split("-")
-              |> Enum.map(&(Integer.parse(&1) |> Tuple.to_list() |> List.first()))
+    [{vulgar_open, vulgar_close}, {holy_open, holy_close}] =
+      case JusticeDialer.CampaignConfig.get_open_close(district) do
+        nil ->
+          [vulgar_open, vulgar_close] =
+            case metadata["open_time_monday_saturday"] do
+              time_range when is_binary(time_range) ->
+                time_range
+                |> String.split("-")
+                |> Enum.map(&(Integer.parse(&1) |> Tuple.to_list() |> List.first()))
 
-            _ ->
-              [10, 21]
-          end
+              _ ->
+                [10, 21]
+            end
 
-        [holy_open, holy_close] =
-          case metadata["open_time_sunday"] do
-            time_range when is_binary(time_range) ->
-              time_range
-              |> String.split("-")
-              |> Enum.map(&(Integer.parse(&1) |> Tuple.to_list() |> List.first()))
+          [holy_open, holy_close] =
+            case metadata["open_time_sunday"] do
+              time_range when is_binary(time_range) ->
+                time_range
+                |> String.split("-")
+                |> Enum.map(&(Integer.parse(&1) |> Tuple.to_list() |> List.first()))
 
-            _ ->
-              [12, 21]
-          end
+              _ ->
+                [12, 21]
+            end
 
-        times_for = fn
-          7 -> [holy_open, holy_close]
-          _ -> [vulgar_open, vulgar_close]
-        end
+          [{vulgar_open, vulgar_close}, {holy_open, holy_close}]
 
-        [today_open, today_close] = times_for.(day_of_week)
-        [tomorrow_open, tomorrow_close] = times_for.(day_of_week + 1)
+        tup = {_open, _close} ->
+          [tup, tup]
+      end
 
-        cond do
-          local_hours >= today_open and local_hours < today_close ->
-            true
+    times_for = fn
+      7 -> [holy_open, holy_close]
+      _ -> [vulgar_open, vulgar_close]
+    end
 
-          local_hours < today_open ->
-            {:before,
-             "#{today_open} #{if today_open == 12, do: "PM", else: "AM"} #{abbreviation} "}
+    [today_open, today_close] = times_for.(day_of_week)
+    [tomorrow_open, tomorrow_close] = times_for.(day_of_week + 1)
 
-          local_hours >= today_close ->
-            {:after, "#{tomorrow_open} AM #{abbreviation} "}
-        end
+    cond do
+      local_hours >= today_open and local_hours < today_close ->
+        true
 
-      boolean ->
-        boolean
+      local_hours < today_open ->
+        {:before, "#{today_open} #{if today_open == 12, do: "PM", else: "AM"} #{abbreviation} "}
+
+      local_hours >= today_close ->
+        {:after, "#{tomorrow_open} AM #{abbreviation} "}
     end
   end
 
@@ -285,5 +287,9 @@ defmodule JusticeDialer.PageController do
 
   defp is_callable(_else) do
     false
+  end
+
+  def join_redirect(conn, _) do
+    redirect(conn, external: "https://form.jotform.com/81226352584154")
   end
 end

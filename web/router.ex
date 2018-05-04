@@ -25,6 +25,7 @@ defmodule JusticeDialer.Router do
     pipe_through(:browser)
 
     get("/", PageController, :index)
+    get("/join", PageController, :join_redirect)
     get("/candidate/:candidate", PageController, :candidate)
 
     get("/login", LoginController, :get)

@@ -30,7 +30,7 @@ defmodule JusticeDialer.CampaignConfig do
     ~m(district candidate start_time end_time)
   end
 
-  def is_open?(candidate_district) do
+  def get_open_close(candidate_district) do
     get_all()
     |> Enum.find(fn ~m(district) ->
       String.downcase(candidate_district) == String.downcase(district)
@@ -41,7 +41,7 @@ defmodule JusticeDialer.CampaignConfig do
 
           ~m(start_time end_time) ->
             hour = Timex.now("America/New_York").hour
-            hour >= start_time and hour <= end_time
+            {start_time, end_time}
         end).()
   end
 end
