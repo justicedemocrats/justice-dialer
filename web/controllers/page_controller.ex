@@ -206,36 +206,29 @@ defmodule JusticeDialer.PageController do
     local_hours = now.hour
     day_of_week = Timex.weekday(now)
 
-    [{vulgar_open, vulgar_close}, {holy_open, holy_close}] =
-      case JusticeDialer.CampaignConfig.get_open_close(district) do
-        nil ->
-          [vulgar_open, vulgar_close] =
-            case metadata["open_time_monday_saturday"] do
-              time_range when is_binary(time_range) ->
-                time_range
-                |> String.split("-")
-                |> Enum.map(&(Integer.parse(&1) |> Tuple.to_list() |> List.first()))
+    [vulgar_open, vulgar_close] =
+      case metadata["open_time_monday_saturday"] do
+        time_range when is_binary(time_range) ->
+          time_range
+          |> String.split("-")
+          |> Enum.map(&(Integer.parse(&1) |> Tuple.to_list() |> List.first()))
 
-              _ ->
-                [10, 21]
-            end
-
-          [holy_open, holy_close] =
-            case metadata["open_time_sunday"] do
-              time_range when is_binary(time_range) ->
-                time_range
-                |> String.split("-")
-                |> Enum.map(&(Integer.parse(&1) |> Tuple.to_list() |> List.first()))
-
-              _ ->
-                [12, 21]
-            end
-
-          [{vulgar_open, vulgar_close}, {holy_open, holy_close}]
-
-        tup = {_open, _close} ->
-          [tup, tup]
+        _ ->
+          [10, 21]
       end
+
+    [holy_open, holy_close] =
+      case metadata["open_time_sunday"] do
+        time_range when is_binary(time_range) ->
+          time_range
+          |> String.split("-")
+          |> Enum.map(&(Integer.parse(&1) |> Tuple.to_list() |> List.first()))
+
+        _ ->
+          [12, 21]
+      end
+
+    [{vulgar_open, vulgar_close}, {holy_open, holy_close}]
 
     times_for = fn
       7 -> [holy_open, holy_close]
