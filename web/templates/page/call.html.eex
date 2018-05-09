@@ -39,7 +39,7 @@
         <span style="font-weight: bold; margin-bottom: 10px;">
           <%= case @candidate_is_open do %>
             <% true -> %>
-              The dialer will be open until <%= @close_time %> PM. Is now not a good time? <a href="https://now.justicedemocrats.com/form/call-from-home"> Sign up for a calling shift </a> to make calls later.
+              The dialer will be open until <%= @close_time %> PM. 
             <% {:before, time} -> %>
               The dialer for <%= @candidate["title"] %> will open today at <%= time %>.
             <% {:after, time} -> %>
@@ -52,16 +52,10 @@
           <%= case @candidate_is_open do %>
             <% true -> %> <div></div>
             <% {:before, time} -> %>
-                <a class="button button-light" href="https://now.justicedemocrats.com/form/call-from-home" target="_blank">
-                  Sign Up to Make Calls Later
-                </a>
                 <a class="button" href="/" target="_blank">
                   Make Calls for Other Candidates
                 </a>
             <% {:after, time} -> %>
-                <a class="button button-light" href="https://now.justicedemocrats.com/form/call-from-home" target="_blank">
-                  Sign Up to Make Calls Another Day
-                </a>
                 <a class="button" href="/" target="_blank">
                   Make Calls for Other Candidates
                 </a>
