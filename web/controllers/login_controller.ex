@@ -2,8 +2,7 @@ defmodule JusticeDialer.LoginController do
   use JusticeDialer.Web, :controller
   import ShortMaps
   require Logger
-  alias JusticeDialer.TwoFactor
-  alias JusticeDialer.TwoFactorToken
+  alias JusticeDialer.{TwoFactor, TwoFactorToken, LoginRecord}
 
   def get(conn, params) do
     groups =
@@ -71,9 +70,9 @@ defmodule JusticeDialer.LoginController do
     )
   end
 
-  def who_claimed(conn, _params = ~m(client login)) do
+  def who_claimed(conn, _params = ~m(login)) do
     result =
-      case Ak.DialerLogin.who_claimed(client, login) do
+      case LoginRecord.who_claimed(login) do
         ~m(email calling_from phone) -> ~m(email calling_from phone login)
         nil -> %{error: "Not found"}
       end
@@ -81,11 +80,11 @@ defmodule JusticeDialer.LoginController do
     json(conn, result)
   end
 
-  def who_claimed_many(conn, _params = ~m(client logins)) do
+  def who_claimed_many(conn, _params = ~m(logins)) do
     results =
       Enum.map(logins, fn login ->
         Task.async(fn ->
-          case Ak.DialerLogin.who_claimed(client, login) do
+          case LoginRecord.who_claimed(login) do
             ~m(email calling_from phone) -> ~m(login email calling_from phone)
             nil -> nil
           end
@@ -263,8 +262,8 @@ defmodule JusticeDialer.LoginController do
   end
 
   def claim_login(params = ~m(email phone name), client) do
-    current_username = Ak.DialerLogin.existing_login_for_email(email, client)
-    action_calling_from = params["calling_from"] || "unknown"
+    current_username = LoginRecord.existing_login_for_email(email, client) |> IO.inspect()
+    calling_from = params["calling_from"] || "unknown"
 
     ~m(username password) =
       cond do
@@ -282,14 +281,13 @@ defmodule JusticeDialer.LoginController do
       end
 
     spawn(fn ->
-      Ak.DialerLogin.record_login_claimed(
-        ~m(email phone name action_calling_from),
+      LoginRecord.record_login_claimed(
+        ~m(email phone name calling_from),
         username,
-        client,
-        true
+        client
       )
 
-      send_login_webhook(~m(email phone name action_calling_from username client))
+      send_login_webhook(~m(email phone name calling_from username client))
     end)
 
     ~m(username password)

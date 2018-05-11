@@ -16,9 +16,6 @@ defmodule JusticeDialer do
       supervisor(Phoenix.PubSub.PG2, [:justice_dialer, []]),
       worker(Cosmic, [[application: :justice_dialer]]),
       worker(JusticeDialer.Scheduler, []),
-      worker(Ak.List, []),
-      worker(Ak.Signup, []),
-      worker(Ak.Petition, []),
       worker(Livevox.Session, []),
       worker(Mongo, [
         [

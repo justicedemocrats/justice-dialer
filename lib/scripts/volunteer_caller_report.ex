@@ -6,7 +6,7 @@ defmodule VolunteerCallerReport do
         "timestamp" => %{"$gt" => Timex.now() |> Timex.shift(days: -7)}
       })
       |> Enum.filter(&(&1 != "" and &1 != nil))
-      |> Enum.map(&Ak.DialerLogin.who_claimed("jd", &1))
+      |> Enum.map(&JusticeDialer.LoginRecord.who_claimed(&1))
       |> Enum.map(
         &Map.take(
           &1,

@@ -60,7 +60,6 @@ defmodule JusticeDialer.Mixfile do
       {:poison, "~> 3.0", override: true},
       {:cosmic, git: "https://github.com/justicedemocrats/cosmic_ex.git"},
       {:short_maps, "~> 0.1.2"},
-      {:actionkit, git: "https://github.com/justicedemocrats/actionkit_ex.git"},
       {:rollbax, "~> 0.6"},
       {:mongodb, "~> 0.4.3"},
       {:ex_twilio, "~> 0.5.1"},
