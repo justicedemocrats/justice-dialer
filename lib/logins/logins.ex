@@ -7,6 +7,8 @@ defmodule JusticeDialer.Logins do
          |> CSV.decode()
          |> Enum.map(fn {:ok, word} -> word end)
 
+  @login_load_batch_size 5
+
   def reset do
     pools = JusticeDialer.LoginConfig.get_all()
     clients = Enum.map(pools, & &1["client"])
@@ -135,9 +137,15 @@ defmodule JusticeDialer.Logins do
     Db.logins_for_client(client)
     |> Stream.with_index()
     |> Stream.map(&report/1)
-    |> Flow.from_enumerable(min_demand: 1, max_demand: 2)
-    |> Flow.each(&load_login_into_livevox(&1, services, only_update_services))
-    |> Flow.run()
+    |> Stream.chunk_every(@login_load_batch_size)
+    |> Stream.each(fn chunk ->
+      Enum.map(
+        chunk,
+        &Task.async(fn -> load_login_into_livevox(&1, services, only_update_services) end)
+      )
+      |> Enum.each(&Task.await/1)
+    end)
+    |> Stream.run()
 
     HTTPotion.post(
       Application.get_env(:justice_dialer, :on_usernames_load),
