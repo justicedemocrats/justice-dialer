@@ -14,7 +14,9 @@ defmodule JusticeDialer.LoginRecord do
   def who_claimed(username) do
     day = Timex.now(@claim_tz) |> Timex.format!("{0D}-{0M}-{YYYY}")
 
-    case Mongo.find_one(:mongo, "claims", ~m(day username)) do
+    query = %{"username" => %{"$regex" => username, "$options" => "i"}, "day" => day}
+
+    case Mongo.find_one(:mongo, "claims", query) do
       nil -> nil
       map -> Map.drop(map, ~w(_id))
     end
