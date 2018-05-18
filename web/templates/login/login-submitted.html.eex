@@ -21,12 +21,9 @@
 
   <%= raw(@call_page) %>
 
-  <script src="https://wchat.freshchat.com/js/widget.js"></script>
-  <script>
-    window.fcWidget.init({
-      token: "b29b8065-c796-4c51-9aff-31bedd1b603f",
-      host: "https://wchat.freshchat.com"
-    });
+  <script type="text/javascript" src="http://assets.freshdesk.com/widget/freshwidget.js"></script>
+  <script type="text/javascript">
+    FreshWidget.init("", {"queryString": "", "url": "https://justicedems.freshdesk.com"} );
   </script>
 </div>
 
