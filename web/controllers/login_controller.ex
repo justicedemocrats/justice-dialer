@@ -2,7 +2,7 @@ defmodule JusticeDialer.LoginController do
   use JusticeDialer.Web, :controller
   import ShortMaps
   require Logger
-  alias JusticeDialer.{TwoFactor, TwoFactorToken, LoginRecord}
+  alias JusticeDialer.{TwoFactor, TwoFactorToken, LoginRecord, Logins}
 
   def get(conn, params) do
     groups =
@@ -348,6 +348,39 @@ defmodule JusticeDialer.LoginController do
         conn
         |> put_status(400)
         |> json(~m(error))
+    end
+  end
+
+  def reset_login_set(conn, params = ~m(secret pool_slug)) do
+    case Application.get_env(:justice_dialer, :update_secret) do
+      ^secret ->
+        case Logins.reset(pool_slug) do
+          {:error, 404} ->
+            conn
+            |> put_status(404)
+            |> text("Pool slug not found")
+
+          {:ok, _} ->
+            text(conn, "OK")
+        end
+
+      _correct_secret ->
+        conn
+        |> put_status(403)
+        |> text("Wrong secret. Contact Ben.")
+    end
+  end
+
+  def update_login_set(conn, params = ~m(secret pool_slug)) do
+    case Application.get_env(:justice_dialer, :update_secret) do
+      ^secret ->
+        Logins.load_pool_into_livevox(pool_slug)
+        text(conn, "Updated!")
+
+      _correct_secret ->
+        conn
+        |> put_status(403)
+        |> text("Wrong secret. Contact Ben.")
     end
   end
 end

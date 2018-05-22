@@ -61,6 +61,9 @@ defmodule JusticeDialer.Router do
     post("/claim-login/:client", LoginController, :api_login)
     post("/verify-number/:client", LoginController, :api_two_factor)
 
+    get("/reset-logins/:pool_slug", LoginController, :reset_login_set)
+    get("/reload-logins/:pool_slug", LoginController, :update_login_set)
+
     post("/callback", LoginController, :callback)
   end
 

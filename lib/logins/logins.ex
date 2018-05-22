@@ -35,6 +35,23 @@ defmodule JusticeDialer.Logins do
     Logger.info("Updated logins in livevox")
   end
 
+  def reset(slug) do
+    case JusticeDialer.LoginConfig.get_all()
+         |> Enum.filter(fn ~m(client) -> client == slug end)
+         |> List.first() do
+      pool = ~m(count wrap_up client prefix) ->
+        logins = gen_logins(count, prefix, wrap_up, client)
+        Db.delete_logins(client)
+        Db.insert_logins(logins)
+        Db.reset_claimed(client)
+        load_pool_into_livevox(client)
+        {:ok, 200}
+
+      nil ->
+        {:error, 404}
+    end
+  end
+
   def next_login(client) do
     client_count = Db.inc_claimed(client)
     # wrap around 1000 just in case
@@ -127,6 +144,15 @@ defmodule JusticeDialer.Logins do
     JusticeDialer.LoginConfig.get_all()
     |> Stream.each(&load_pool_into_livevox(&1, true))
     |> Stream.run()
+  end
+
+  def load_pool_into_livevox(slug) when is_binary(slug) do
+    pool =
+      JusticeDialer.LoginConfig.get_all()
+      |> Enum.filter(fn ~m(client) -> client == slug end)
+      |> List.first()
+
+    load_pool_into_livevox(pool)
   end
 
   def load_pool_into_livevox(pool = ~m(client), only_update_services \\ false) do

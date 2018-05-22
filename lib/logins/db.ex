@@ -36,8 +36,12 @@ defmodule Db do
     Mongo.delete_many(:mongo, "dialer_logins", %{})
   end
 
+  def delete_logins(client) do
+    Mongo.delete_many(:mongo, "dialer_logins", ~m(client))
+  end
+
   def logins_for_client(client) do
-    Mongo.find(:mongo, "dialer_logins", %{"client" => client})
+    Mongo.find(:mongo, "dialer_logins", ~m(client))
   end
 
   def calling_users do
