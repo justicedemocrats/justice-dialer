@@ -25,7 +25,7 @@ defmodule JusticeDialer.LoginRecord do
             Timex.now(@claim_tz) |> Timex.shift(days: -1) |> Timex.format!("{0D}-{0M}-{YYYY}")
           )
 
-        Mongo.find_one(:mongo, "claims", query)
+        Mongo.find_one(:mongo, "claims", yesterday_query)
 
       map ->
         Map.drop(map, ~w(_id))
